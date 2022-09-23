@@ -89,6 +89,8 @@ while (True):
 		# print(str(kp.pt[0]) + "," + str(kp.pt[1]))
 
 	cv2.circle(im_with_keypoints, (int(res_width/2), int(res_height/2)), 2, (255, 255, 0), -1)
+	if len(keypoints) > 0:
+		cv2.line(im_with_keypoints, (int(keypoints[0].pt[0]),int(keypoints[0].pt[1])), (int(res_width/2), int(res_height/2)), (0, 255, 0), 1)
 
 	#Show results
 	cv2.imshow('Mask Frame', mask)
