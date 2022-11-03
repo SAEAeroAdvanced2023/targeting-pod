@@ -9,7 +9,7 @@ import time
 from gpiozero import Device, Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 from time import sleep
-from inputs import get_gamepad
+from threading import Thread
 
 # Servo init
 Device.pin_factory = PiGPIOFactory()
@@ -17,7 +17,7 @@ vservo = Servo(24)
 hservo = Servo(23)
 vservo.value = 0
 hservo.value = 0
-inc = 0.0003
+inc = 0.0002
 
 # Open video object
 vid = cv2.VideoCapture(0)
@@ -33,7 +33,7 @@ params.minThreshold = 10
 params.maxThreshold = 200
 # Filter by Area.
 params.filterByArea = True
-params.minArea = 5000
+params.minArea = 3000
 params.maxArea = 10000000000
 # Filter by Circularity
 params.filterByCircularity = False
@@ -55,7 +55,7 @@ detector = cv2.SimpleBlobDetector_create(params)
 # "ready": no math, user controllable
 # "manual": math, user controllable
 # "auto": no math, not user controllable
-mode = "ready"
+mode = "auto"
 
 
 def normalize(x):
@@ -64,39 +64,18 @@ def normalize(x):
     return x
 
 
+
 def calculate_point():
     print("Math!")
 
-
-# TODO: Integrate with dashboard instead of gamepad
 input_speed = 0.01
 
-
-def get_input():
-    events = get_gamepad()
-    for event in events:
-        if event.code == 'BTN_TRIGGER_HAPPY1':  # L
-            hservo.value = normalize(hservo.value - input_speed)
-        elif event.code == 'BTN_TRIGGER_HAPPY2':  # R
-            hservo.value = normalize(hservo.value + input_speed)
-        elif event.code == 'BTN_TRIGGER_HAPPY3':  # U
-            vservo.value = normalize(vservo.value + input_speed)
-        elif event.code == 'BTN_TRIGGER_HAPPY4':  # D
-            vservo.value = normalize(vservo.value - input_speed)
-
-
-def ready():
-    get_input()
-
-
 def manual():
-    get_input()
     calculate_point()
-
 
 def auto():
     if len(keypoints) > 0:
-        calculate_point()
+        #calculate_point()
         hdif = abs(res_width / 2 - keypoints[0].pt[0])
         if keypoints[0].pt[0] > res_width / 2:
             hservo.value = normalize(hservo.value - (hdif * inc))
@@ -111,7 +90,7 @@ def auto():
 
 # Loop through video
 while True:
-    stime = time.time()
+    #stime = time.time()
     ret, frame = vid.read()
     frame = cv2.resize(frame, (res_width, res_height))
 
@@ -155,24 +134,19 @@ while True:
     cv2.imshow('Mask Frame', mask)
     cv2.imshow('Detection Frame', im_with_keypoints)
 
-    if mode == "manual":
-        print("Q")
-    elif mode == "auto":
-        auto()
-    elif mode == "ready":
-        print("S")
+    auto()
 
     if cv2.waitKey(25) & 0xFF == ord("m"):
         mode = "manual"
     elif cv2.waitKey(25) & 0xFF == ord('a'):
         mode = "auto"
-    elif cv2.waitKey(25) & 0xFF == ord('s'):
+    elif cv2.waitKey(25) & 0xFF == ord('r'):
         mode = "ready"
     elif cv2.waitKey(25) & 0xFF == ord('q'):
-        break
+        exit(0)
 
-    etime = time.time()
-    print(str(etime - stime))
+    #etime = time.time()
+    #print(str(etime - stime))
 
 # Reset servos
 vservo.value = 0
