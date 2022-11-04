@@ -58,7 +58,7 @@ detector = cv2.SimpleBlobDetector_create(params)
 mode = "auto"
 
 
-def normalize(x):
+def normalize(x): # Misnomer!
     if x > 1: x = 1
     if x < -1: x = -1
     return x

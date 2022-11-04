@@ -1,0 +1,15 @@
+{
+  "minThreshold":10,
+  "maxThreshold":200,
+  "filterByArea":true,
+  "minArea":5000,
+  "maxArea":1000000000,
+  "filterByCircularity":false,
+  "minCircularity":0.5,
+  "filterByConvexity":false,
+  "minConvexity":0.50,
+  "filterByInertia":false,
+  "minInertiaRatio":0.01,
+  "filterByColor":true,
+  "blobColor":255
+}
