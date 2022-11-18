@@ -135,7 +135,19 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
 int main(int argc, char** argv){
 
     // Init servos
-    initServos();
+    //initServos();
+    if(gpioInitialise() < 0){ //Initialization Failed
+        cout << "Could not init servos :( Exiting..." << endl;
+        exit(1);
+    } else {
+        cout << "Yay\n";
+        gpioSetMode(V_SERVO, PI_OUTPUT);
+        v_value = SERVO_MID;
+        gpioServo(V_SERVO, v_value);
+        gpioSetMode(H_SERVO, PI_OUTPUT);
+        h_value = SERVO_MID;
+        gpioServo(H_SERVO, h_value);
+    }
 
     // Init the video
     VideoCapture vid = initVideo();
@@ -202,6 +214,8 @@ int main(int argc, char** argv){
 
         if ((char)cv::waitKey(10) > 0) break;
     }
+
+    gpioTerminate();
 
     return 0;
 

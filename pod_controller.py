@@ -90,7 +90,7 @@ def auto():
 
 # Loop through video
 while True:
-    #stime = time.time()
+    stime = time.time()
     ret, frame = vid.read()
     frame = cv2.resize(frame, (res_width, res_height))
 
@@ -145,8 +145,8 @@ while True:
     elif cv2.waitKey(25) & 0xFF == ord('q'):
         exit(0)
 
-    #etime = time.time()
-    #print(str(etime - stime))
+    etime = time.time()
+    print(str(etime - stime))
 
 # Reset servos
 vservo.value = 0
