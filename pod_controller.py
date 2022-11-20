@@ -21,20 +21,23 @@ vservo.value = 0
 hservo.value = 0
 inc = 0.0002
 
+# Processing size 
+res_height = 240 # 480
+res_width = 426 # 852
+
 # Open video object
-if len(sys.argv) > 0:
+print(len(sys.argv))
+if len(sys.argv) > 1:
+    print("Using webcam")
     vid = cv2.VideoCapture(0)
 else:
+    print("Using PiCam")
     vid = Picamera2()
-    vid.configure(vid.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+    vid.configure(vid.create_preview_configuration(main={"format": 'XRGB8888', "size": (res_width, res_height)}))
     vid.start()
     # vid = PiRGBArray(camera)
 
 time.sleep(1)
-
-# Processing size
-res_height = 240  # 480
-res_width = 426  # 852
 
 # Set up the params
 params = cv2.SimpleBlobDetector_Params()
@@ -102,12 +105,11 @@ def auto():
 while True:
     stime = time.time()
 
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         ret, frame = vid.read()
+        frame = cv2.resize(frame, (res_width, res_height))
     else:
         frame = vid.capture_array()
-
-    frame = cv2.resize(frame, (res_width, res_height))
 
     # Convert to hsv color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
