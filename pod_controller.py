@@ -7,6 +7,7 @@ import sys
 import cv2
 import numpy as np
 import time
+import targeting
 from gpiozero import Device, Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 from time import sleep
@@ -159,8 +160,11 @@ while True:
         mode = "auto"
     elif cv2.waitKey(25) & 0xFF == ord('r'):
         mode = "ready"
+    elif cv2.waitKey(25) & 0xFF == ord('x'):
+        if len(keypoints) > 0:
+            print(coor_camera_to_inertial_frame (pix_x=keypoints[0].pt[0], pix_y=keypoints[0].pt[1],x = 0,y = 0 , z = -210,roll=np.pi/2,yaw=0,pitch=-np.pi/5,g_roll=0, g_yaw=0, g_pitch=0, calibration = True))
     elif cv2.waitKey(25) & 0xFF == ord('q'):
-        exit(0)
+        break
 
     etime = time.time()
     print(str(etime - stime))
