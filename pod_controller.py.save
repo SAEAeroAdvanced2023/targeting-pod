@@ -3,15 +3,14 @@
 # color range
 # increment constant
 
-import sys
 import cv2
+import picamera2
 import numpy as np
 import time
 from gpiozero import Device, Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 from time import sleep
 from threading import Thread
-from picamera2 import Picamera2
 
 # Servo init
 Device.pin_factory = PiGPIOFactory()
@@ -22,15 +21,7 @@ hservo.value = 0
 inc = 0.0002
 
 # Open video object
-if len(sys.argv) > 0:
-    vid = cv2.VideoCapture(0)
-else:
-    vid = Picamera2()
-    vid.configure(vid.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
-    vid.start()
-    # vid = PiRGBArray(camera)
-
-time.sleep(1)
+vid = cv2.VideoCapture(0)
 
 # Processing size
 res_height = 240  # 480
@@ -101,12 +92,7 @@ def auto():
 # Loop through video
 while True:
     stime = time.time()
-
-    if len(sys.argv) > 0:
-        ret, frame = vid.read()
-    else:
-        frame = vid.capture_array()
-
+    ret, frame = vid.read()
     frame = cv2.resize(frame, (res_width, res_height))
 
     # Convert to hsv color space
