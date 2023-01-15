@@ -2910,7 +2910,7 @@ struct JsonStructBaseDummy
     {                                                                                                                  \
       return super_list;                                                                                               \
     }                                                                                                                  \
-  }
+  };
 
 #define JS_OBJECT_EXTERNAL_INTERNAL_IMPL(Type, super_list, member_list)                                                \
   namespace JS                                                                                                         \
