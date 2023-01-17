@@ -6,6 +6,13 @@
 
 using namespace std;
 
+// try using: https://mavlink.io/en/mavgen_c/
+// look into: https://github.com/ArduPilot/ardupilot/blob/master/libraries/GCS_MAVLink/GCS_Common.cpp
+mavlink_system_t mavlink_system = {
+        1, // System ID (1-255)
+        1  // Component ID (a MAV_COMPONENT value)
+};
+
 int main() {
     // Initialize serial port
     SerialPort serialPort("/dev/ttyACM0", 57600);
@@ -33,6 +40,21 @@ int main() {
             if (mavlink_parse_char(MAVLINK_COMM_0, buffer[i], &msg, &status)) {
                 std::cout << "Received MAVLink message with ID: " << msg.msgid << std::endl;
             }
+        }
+    }
+
+
+    mavlink_status_t status;
+    mavlink_message_t msg;
+    int chan = MAVLINK_COMM_0;
+
+    while(serial.bytesAvailable > 0)
+    {
+        uint8_t byte = serial.getNextByte();
+        if (mavlink_parse_char(chan, byte, &msg, &status))
+        {
+            printf("Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            // ... DECODE THE MESSAGE PAYLOAD HERE ...
         }
     }
 
