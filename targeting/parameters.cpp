@@ -6,6 +6,8 @@
 
 using namespace std;
 
+// TODO: Load in camera calibration matrix from file and keep the calibration as a Python script that writes to file
+
 // Loads file into string
 string readFile(string file){
     string paramText = "";

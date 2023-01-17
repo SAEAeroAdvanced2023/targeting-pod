@@ -13,7 +13,7 @@ void FlightController::readData(){
 
 }
 
-// TODO: Send a command to the controller
+// TODO: Send a command to the controller (Do we ever do this from this program? Or is it only from the GS?)
 void FlightController::sendData(){
     
 }

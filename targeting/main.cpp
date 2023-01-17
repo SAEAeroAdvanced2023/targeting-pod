@@ -79,7 +79,7 @@ int main(int argc, char** argv){
         inRange(hsv, Scalar(170, 150, 150), Scalar(180, 255, 255), mask2);
         mask = mask1 | mask2; // bitwise or instead of addition!!!
 
-        // Dectecting the blobd and drawing on the frame
+        // Detecting the blob and drawing on the frame
         detector->detect(mask, keypoints);
         drawKeypoints(mask,keypoints,mask);
 
@@ -100,16 +100,16 @@ int main(int argc, char** argv){
         // Check flight controller data to see if mode changed
         // IDK
 
-        // Calculate the point and store it
+        // Calculate the point and store it (Depending on mode)
         // pointList.addPoint(calculatePoint());
 
         // Check flight controller to see if Auto or Manual
         // IDK
 
-        // Move the gimbal
+        // Move the gimbal (Depending on mode)
         gimbal.trackPoint(keypoints);
 
-        // Print the amount of thime the frame took to process (Optional)
+        // Print the amount of time the frame took to process (Optional)
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
         cout << fixed << setprecision(10) << time << endl;
