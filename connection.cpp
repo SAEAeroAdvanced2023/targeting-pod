@@ -1,10 +1,15 @@
 //DOES NOT WORK!!!! JUST TESTING OUT STUFF
 
 #include <iostream>
-#include <mavlink/v2.0/common/mavlink.h>
-#include <SerialPort.h>
+#include "../mavlink/c_library_v2/common/mavlink.h"
+#include <SerialPort/SerialPort/SerialPort.h>
+#include "../ardupilot/libraries/GCS_MAVLink/GCS.h"
 
 using namespace std;
+
+void function(){
+    GCS_MAVLINK::send_raw_imu();
+}
 
 int main() {
     // Initialize serial port
