@@ -15,7 +15,6 @@ public:
 private:
     VideoCapture initVideo();
     VideoCapture video;
-    
 };
 
 #endif

@@ -6,7 +6,8 @@
 using namespace std;
 
 //TODO: Define the data
-struct SensorData{
+struct CubeData{
+    string mode;
     int q;
 };
 
@@ -15,8 +16,9 @@ public:
     FlightController();
     void readData();
     void sendData();
+    CubeData getData();
 private:
-    SensorData data;
+    CubeData data;
     int vehicle; // TODO: not an int but yunno
 };
 
