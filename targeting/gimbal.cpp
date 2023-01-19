@@ -1,5 +1,6 @@
 #include <iostream>
 #include <pigpio.h>
+#include <opencv2/core.hpp>
 #include "gimbal.h"
 
 Gimbal::Gimbal(){
@@ -22,14 +23,16 @@ void Gimbal::initServos(){
     } else {
         gpioSetMode(V_SERVO, PI_OUTPUT);
         this.v_value = SERVO_MID;
-        gpioServo(V_SERVO, this.v_value);
+        gpioServo(V_SERVO, this->v_value);
         gpioSetMode(H_SERVO, PI_OUTPUT);
         this.h_value = SERVO_MID;
-        gpioServo(H_SERVO, this.h_value);
+        gpioServo(H_SERVO, this->h_value);
     }
 }
 
-void Gimbal::trackPoint(vector<KeyPoint> keypoints){
+// Automatically moves gimbal to track point
+// TODO: Improve algorithm
+void Gimbal::trackPoint(vector<cv::KeyPoint> keypoints, cv::Mat mask){
     if (keypoints.size() == 1){
             int hdif = abs(mask.cols/2 - keypoints[0].pt.x);
             if (keypoints[0].pt.x > mask.cols/2){
@@ -48,4 +51,9 @@ void Gimbal::trackPoint(vector<KeyPoint> keypoints){
                 gpioServo(V_SERVO, v_value);
             }
         }
+}
+
+// TODO: Implementation
+void Gimbal::manualMove(){
+
 }

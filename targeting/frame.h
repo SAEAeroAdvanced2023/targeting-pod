@@ -5,6 +5,7 @@
 
 using namespace cv;
 
+// TODO: Ill be fully honest, "Frame" is a bad name for this struct :(
 struct Frame {
     time_t timestamp;
     Mat image;

@@ -3,17 +3,28 @@
 #include <iomanip>
 #include <chrono>
 #include <pigpio.h>
+#include <cstring>
 #include <opencv2/videoio.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include "camera.h"
+#include "flightcontroller.h"
+#include "frame.h"
+#include "gimbal.h"
+#include "imu.h"
+#include "parameters.h"
+#include "pointlist.h"
+#include "transformer.h"
+#include "transmitter.h"
+
 #include "json_struct.h"
 
 // TODO: Make a general config for other things like camera index or servos enabled or not
-// TODO: Separate code into different files including header files
 
-// TODO: Stop using namespaces
+// TODO: Stop using namespaces just in case
 using namespace std;
 using namespace cv;
 
@@ -32,31 +43,32 @@ void crosshair(int x, int y, Mat frame, int r) {
 int main(int argc, char** argv){
 
     // Init gimbal
-    Gimbal gimbal();
+    Gimbal gimbal;
 
     // Init Camera
-    Camera camera();
+    Camera camera;
 
     // Init Flight Controller
-    FlightController flightController();
+    FlightController flightController;
 
     // Init IMU
-    IMU imu();
+    IMU imu;
 
     // Init PointList
-    PointList pointList();
+    PointList pointList;
 
     // Init Transmitter
-    Transmitter transmitter();
+    Transmitter transmitter;
 
     // Load parameters and create detector (Shout out json_struct.h)
-    string blobParams = readFile(BLOB_PARAM_FILE);
+    string paramText = readFile(BLOB_PARAM_FILE);
     Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
 
     // Misc variables
     string mode = "ready";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
+    Frame frame;
 
     // Main Loop
     while (true){
@@ -65,7 +77,7 @@ int main(int argc, char** argv){
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
         // Get new frame
-        camera.getFrame();
+        frame = camera.getFrame();
 
         // Get new data from data 
         flightController.readData();
@@ -74,40 +86,41 @@ int main(int argc, char** argv){
         imu.getSensorData();
 
         // Masking the frames
-        cvtColor(camera.video, hsv ,COLOR_BGR2HSV);
+        cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
         inRange(hsv, Scalar(0, 150, 150), Scalar(10, 255, 255), mask1);
         inRange(hsv, Scalar(170, 150, 150), Scalar(180, 255, 255), mask2);
-        mask = mask1 | mask2; // bitwise or instead of addition!!!
+        mask = mask1 | mask2; // Bitwise OR instead of addition!!!
 
         // Detecting the blob and drawing on the frame
         detector->detect(mask, keypoints);
         drawKeypoints(mask,keypoints,mask);
 
         for (int i = 0; i < keypoints.size(); i++){
-            crosshair(keypoints[i].pt.x, keypoints[i].pt.y, frame, 20);
-            line(frame, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
+            crosshair(keypoints[i].pt.x, keypoints[i].pt.y, frame.image, 20);
+            line(frame.image, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
         }
 
-        circle(frame, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
+        circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
 
         // Transmit video frame (With the points on plz)
         transmitter.transmitVideo();
 
-        // Display frames on screen (optional)
-        // imshow("Preprocessed", frame);
+        // Display frames on screen
+        imshow("Preprocessed", frame.image);
         // imshow("Masked", mask);
 
-        // Check flight controller data to see if mode changed
-        // IDK
+        // Check flight controller data to see if mode changed (Unnecessary?)
+        mode = flightController.getData().mode;
 
-        // Calculate the point and store it (Depending on mode)
-        // pointList.addPoint(calculatePoint());
+        // Calculate the point and store it
+        if (mode == "auto" || mode == "manual"){
+            pointList.addPoint(transform_dummy(frame.timestamp)); // Dummy function for testing
+        }
 
-        // Check flight controller to see if Auto or Manual
-        // IDK
-
-        // Move the gimbal (Depending on mode)
-        gimbal.trackPoint(keypoints);
+        // Move the gimbal
+        if (mode == "ready" || mode == "manual"){
+            gimbal.trackPoint(keypoints, mask);
+        }
 
         // Print the amount of time the frame took to process (Optional)
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

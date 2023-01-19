@@ -17,3 +17,7 @@ void FlightController::readData(){
 void FlightController::sendData(){
     
 }
+
+CubeData FlightController::getData(){
+    return this->data;
+}

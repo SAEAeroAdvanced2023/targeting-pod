@@ -8,7 +8,7 @@ public:
     Transmitter();
     void transmitVideo();
 private:
-    int x; // Place holder, idk what it needs
+    int x; // placeholder, IDK what it needs
 };
 
 #endif

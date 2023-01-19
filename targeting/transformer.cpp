@@ -1,16 +1,18 @@
-#include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
+#include "pointlist.h"
 #include "transformer.h"
 
 using namespace std;
 
+// Returns a Matrix for translation? Ask Mo for info
 Eigen::MatrixXd transformation_translation(double x, double y, double z){
     Eigen::MatrixXd t(4,4);
     t << 1, 0, 0, -x, 0, 1, 0, -y, 0, 0, 1, -z, 0, 0, 0, 1;
     return t;
 }
 
+// Returns a Matrix for rotation? Ask Mo for info
 Eigen::MatrixXd transformation_rotation(double a, double b, double c){
     Eigen::MatrixXd t(4,4);
     t << cos(a)*cos(b), cos(a)*sin(b)*sin(c)-sin(a)*cos(c), cos(a)*sin(b)*cos(c)+sin(a)*sin(c), 0,
@@ -20,6 +22,7 @@ Eigen::MatrixXd transformation_rotation(double a, double b, double c){
     return t;
 }
 
+// More linear algebra. Ask Mo again :)
 Eigen::MatrixXd intersection(Eigen::MatrixXd p0, Eigen::MatrixXd p1, Eigen::Vector3d p_co, Eigen::Vector3d p_no){
     double epsilon = 0.000001;
     Eigen::Vector3d u = p1 - p0;
@@ -35,13 +38,16 @@ Eigen::MatrixXd intersection(Eigen::MatrixXd p0, Eigen::MatrixXd p1, Eigen::Vect
         Eigen::MatrixXd x(1,3);
         // This might break something if ever we get a line parallel to the ground, hope it doesn't :)
         // TODO: Make sure that a coordinate of <0,0,0> is handled PROPERLY somewhere in the code
+        // TODO: Maybe instead of returning it to main, within transform(...) we just fast return nothing and main can figure out what it means instead of wasting time building a struct for an invalid data point
         x << 0, 0, 0;
         return x;
     }
 
 }
 
-void transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch, double g_roll, double g_yaw, double g_pitch, Eigen::MatrixXd ccm, Eigen::MatrixXd ccm_inv, int pix_x, int pix_y, Eigen::MatrixXd g_dist, Eigen::MatrixXd c_dist, double f, Eigen::MatrixXd gnd){
+
+// Converts all inputs to determine the 3d location of the point
+GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch, double g_roll, double g_yaw, double g_pitch, Eigen::MatrixXd ccm, Eigen::MatrixXd ccm_inv, int pix_x, int pix_y, Eigen::MatrixXd g_dist, Eigen::MatrixXd c_dist, double f, Eigen::MatrixXd gnd, time_t timestamp){
 
     // Matrix used to find camera location coordinates
     Eigen::MatrixXd c(4,1);
@@ -82,10 +88,6 @@ void transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch, do
     // Camera coordinates w.r.t. inertial frame
     Eigen::MatrixXd p_cc = trans_i.inverse() * rot_v * trans_g.inverse() * rot_g * trans_c.inverse() * c;
     // Coordinates of object seen in the camera sensor frame wrt inertial frame
-
-    // TODO: trans_i wrong, idk why yet!,
-    cout << trans_i << endl;
-
     Eigen::MatrixXd q_obj = trans_i.inverse() * rot_v * trans_g.inverse() * rot_g * trans_c.inverse() * cam * im * cc * ccm_inv * pix;
     // Intersection point between line formed with the p_cc and q_obj and plane (ground), represents the location of the target w.r.t. the inertial frame
     Eigen::Vector3d p_cc_x(3);
@@ -93,17 +95,22 @@ void transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch, do
     Eigen::Vector3d q_obj_x(3);
     q_obj_x << q_obj(0,0), q_obj(1,0), q_obj(2,0);
 
-    //cout << p_cc_x << "\n\n" << q_obj_x << "\n\n" << gnd.row(0) << "\n\n" << gnd.row(1) << endl;
+    // Find the point
+    Eigen::Vector3d t = intersection(p_cc_x, q_obj_x, gnd.row(0), gnd.row(1));
 
-    Eigen::MatrixXd t = intersection(p_cc_x, q_obj_x, gnd.row(0), gnd.row(1));
+    // Build struct
+    GPSPoint point = {
+            t,
+            timestamp,
+    };
 
-    cout << t << endl;
     // TODO: No validation being performed here, maybe worth returning a struct including how certain it is that it's a good point along with the coordinates
-    // return t;
+    // TODO: Actually add a parameter in the struct containing how close to the normal and optical center we are (The closer the more accurate the prediction)
+    return point;
 
 }
 
-int main(){
+GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd ccm_inv(4,4);
     ccm_inv << 0.00154274, 0, -0.51571205, 0, 0, 0.0015459, -0.40726403, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     Eigen::MatrixXd ccm(3,3);
@@ -125,5 +132,5 @@ int main(){
     double f = 0.035;
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
-    transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd);
+    return transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd, timestamp);
 }
