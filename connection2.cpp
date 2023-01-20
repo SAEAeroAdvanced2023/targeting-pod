@@ -23,6 +23,16 @@ mavlink_system_t mavlink_system = {
         1  // Component ID (a MAV_COMPONENT value)
 };
 
+struct {
+    int32_t lattitude;
+    int32_t longitude;
+    int32_t altitude;
+    int32_t roll;
+    int32_t yaw;
+    int32_t pitch;
+    }cube_data;
+
+
 int main() {
     mavlink_status_t status;
     mavlink_message_t msg;
@@ -32,6 +42,9 @@ int main() {
     mavlink_vfr_hud_t vfr_hud;
     int chan = MAVLINK_COMM_0;
     uint8_t byte;
+    
+    cube_data data;
+    
     
         // Initialize serial port
     int serial_port = open("/dev/ttyACM0", O_RDWR);
@@ -56,17 +69,19 @@ int main() {
                     // Get all fields in payload (into gps_raw_int)
                     mavlink_msg_gps_raw_int_decode(&msg, &gps_raw_int);
                     std::cout <<"Lat: " << gps_raw_int.lat << ", lon: " << gps_raw_int.lon << ", alt: " << gps_raw_int.alt << std::endl;
+                    data.lattitude = gps_raw_int.lat;
+                    data.longitude = gps_raw_int.lon;
+                    data.altitude = gps_raw_int.alt;
+                    
                     }    
                     break;
                 case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data 
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&msg, &attitude);
                     std::cout <<"roll: " << attitude.roll << ", pitch: " << attitude.pitch << ", yaw: " << attitude.yaw << std::endl;
-                    }
-                    break;
-                case 74:{
-                    mavlink_msg_vfr_hud_decode(&msg, &vfr_hud);
-                    //std::cout << vfr_hud.alt << std::endl;
+                    data.roll = attitude.roll;
+                    data.yaw = attitude.yaw;
+                    data.pitch = attitude.pitch;
                     }
                     break;
                 default:
