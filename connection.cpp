@@ -1,10 +1,9 @@
 //DOES NOT WORK!!!! JUST TESTING OUT STUFF
 
 #include <iostream>
-#include <mavlink/v2.0/common/mavlink.h>
-#include <SerialPort.h> // remove?
-#include <..\ardupilot\libraries\GCS_MAVLink\GCS.h>
-#include <wiringSerial.h> // see if useful
+#include "../mavlink/c_library_v2/common/mavlink.h"
+//#include "..\ardupilot\libraries\GCS_MAVLink\GCS.h"
+//#include <wiringSerial.h> // see if useful
 
 using namespace std;
 
@@ -17,7 +16,7 @@ mavlink_system_t mavlink_system = {
 
 int main() {
     // Initialize serial port
-    serialPort = gcnew System::IO::Ports::SerialPort("/dev/ttyACM0", 57600);
+    System::IO::Ports::SeriaPort serialPort = System::IO::Ports::SerialPort("/dev/ttyACM0", 57600);
     if (!serialPort.isOpen()) {
         std::cout << "Error opening serial port" << std::endl;
         return 1;
