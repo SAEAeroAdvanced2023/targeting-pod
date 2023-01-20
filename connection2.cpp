@@ -43,9 +43,7 @@ int main() {
     while(serial_port > 0) {
         read(serial_port, &byte, sizeof(byte));
         if (mavlink_parse_char(chan, byte, &msg, &status)) {
-            //std::cout << "hello" << std:: endl;
-            //printf("Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
-            std::cout << " ok, Received message with ID " << msg.msgid << ", sequence: " << (int) msg.seq << " from component " << (int) msg.compid << " of system " << (int) msg.sysid << std::endl;
+            //std::cout << " ok, Received message with ID " << msg.msgid << ", sequence: " << (int) msg.seq << " from component " << (int) msg.compid << " of system " << (int) msg.sysid << std::endl;
             
             // ... DECODE THE MESSAGE PAYLOAD HERE ...
             switch(msg.msgid) {
@@ -68,7 +66,7 @@ int main() {
                     break;
                 case 74:{
                     mavlink_msg_vfr_hud_decode(&msg, &vfr_hud);
-                    std::cout << vfr_hud.alt << std::endl;
+                    //std::cout << vfr_hud.alt << std::endl;
                     }
                     break;
                 default:
