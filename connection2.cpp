@@ -21,14 +21,14 @@ mavlink_system_t mavlink_system = {
         1  // Component ID (a MAV_COMPONENT value)
 };
 
-struct {
-    int32_t lattitude;
-    int32_t longitude;
-    int32_t altitude;
-    int32_t roll;
-    int32_t yaw;
-    int32_t pitch;
-    }cube_data;
+struct cube_data{
+    int32_t lattitude = 0;
+    int32_t longitude = 0;
+    int32_t altitude = 0;
+    int32_t roll = 0;
+    int32_t yaw = 0;
+    int32_t pitch = 0;
+    };
 
 
 int main() {
@@ -37,7 +37,6 @@ int main() {
     mavlink_attitude_t attitude;
     mavlink_gps_raw_int_t gps_raw_int;
     mavlink_global_position_int_t global_position;
-    mavlink_vfr_hud_t vfr_hud;
     int chan = MAVLINK_COMM_0;
     uint8_t byte;
     
