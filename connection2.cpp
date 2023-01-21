@@ -3,8 +3,6 @@
 #include "../mavlink/c_library_v2/common/mavlink.h"
 #include "../mavlink/c_library_v2/common/mavlink_msg_attitude.h"
 #include "../mavlink/c_library_v2/common/mavlink_msg_gps_raw_int.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_vfr_hud.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_global_position_int.h"
 
 #include <stdio.h>
 #include <iostream>
