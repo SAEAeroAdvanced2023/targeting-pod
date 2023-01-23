@@ -23,8 +23,6 @@ void FlightController::readData(){
     int chan = MAVLINK_COMM_0;
     uint8_t byte;
     
-    
-    
     while(serial_port > 0) {
         read(serial_port, &byte, sizeof(byte));
         if (mavlink_parse_char(chan, byte, &msg, &status)) {

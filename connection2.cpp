@@ -48,12 +48,16 @@ int main() {
     if (serial_port < 0) {
         std::cout << "Error opening serial p0rt" << std::endl;
         return 1;
+    } else {
+        cout << "Port opened!" << endl;
     }
     
     while(serial_port > 0) {
+        cout << "q" << endl;
         read(serial_port, &byte, sizeof(byte));
+        cout << "i" << endl;
         if (mavlink_parse_char(chan, byte, &msg, &status)) {
-            //std::cout << " ok, Received message with ID " << msg.msgid << ", sequence: " << (int) msg.seq << " from component " << (int) msg.compid << " of system " << (int) msg.sysid << std::endl;
+            std::cout << " ok, Received message with ID " << msg.msgid << ", sequence: " << (int) msg.seq << " from component " << (int) msg.compid << " of system " << (int) msg.sysid << std::endl;
             
             // ... DECODE THE MESSAGE PAYLOAD HERE ...
             switch(msg.msgid) {
