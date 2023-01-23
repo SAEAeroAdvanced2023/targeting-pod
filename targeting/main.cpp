@@ -85,6 +85,7 @@ int main(int argc, char** argv){
         // Get new data from gimbal IMU
         imu.getSensorData();
 
+        // TODO: Load from Flight controller
         // Masking the frames
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
         inRange(hsv, Scalar(0, 150, 150), Scalar(10, 255, 255), mask1);

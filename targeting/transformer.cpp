@@ -53,17 +53,6 @@ GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch
     Eigen::MatrixXd c(4,1);
     c << 0, 0, 0, 1;
 
-    // TODO: Inefficient for no reason, probably a better way to do it
-    // Adding column and row to be able to multiply ccm_inv with other matrices
-//    Eigen::MatrixXd temp1(3,1);
-//    temp1 << 0, 0, 0;
-//    Eigen::MatrixXd temp2(3,4);
-//    temp2 << ccm_inv, temp1;
-//    Eigen::MatrixXd temp3(1,4);
-//    temp3 << 0, 0, 0, 1;
-//    Eigen::MatrixXd new_ccm_inv(4,4);
-//    new_ccm_inv << temp2, temp3;
-
     // Target coord in camera
     Eigen::MatrixXd pix(4,1);
     pix << pix_x, pix_y, 1, 1;
@@ -104,7 +93,6 @@ GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch
             timestamp,
     };
 
-    // TODO: No validation being performed here, maybe worth returning a struct including how certain it is that it's a good point along with the coordinates
     // TODO: Actually add a parameter in the struct containing how close to the normal and optical center we are (The closer the more accurate the prediction)
     return point;
 
