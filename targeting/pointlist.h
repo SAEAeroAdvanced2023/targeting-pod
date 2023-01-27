@@ -20,6 +20,7 @@ public:
     void addPoint(GPSPoint p);
     vector<GPSPoint> getPointList();
     void clearList();
+    Eigen::MatrixXd calculateAverage();
 private:
     vector<GPSPoint> pointList;
 };

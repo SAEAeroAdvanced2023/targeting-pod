@@ -3,9 +3,16 @@
 
 #include <iostream>
 
-#include "../mavlink/c_library_v2/common/mavlink.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_attitude.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_gps_raw_int.h"
+#include "../../mavlink/c_library_v2/common/mavlink.h"
+#include "../../mavlink/c_library_v2/common/mavlink_msg_attitude.h"
+#include "../../mavlink/c_library_v2/common/mavlink_msg_gps_raw_int.h"
+
+#include <fcntl.h>
+#include <errno.h>
+#include <termios.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <thread>
 
 using namespace std;
 
@@ -20,11 +27,12 @@ struct CubeData{
     int32_t pitch = 0;
 };
 
-static class FlightController{
+class FlightController{
 public:
     FlightController();
     void readData();
     void sendData();
+    void printData();
     CubeData getData();
 private:
     CubeData data;
@@ -32,7 +40,6 @@ private:
     mavlink_message_t msg;
     mavlink_attitude_t attitude;
     mavlink_gps_raw_int_t gps_raw_int;
-    mavlink_global_position_int_t global_position;
     uint8_t byte;
     int serial_port;
 };

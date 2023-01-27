@@ -1,16 +1,6 @@
 #include <iostream>
 #include "flightcontroller.h"
 
-#include "../mavlink/c_library_v2/common/mavlink.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_attitude.h"
-#include "../mavlink/c_library_v2/common/mavlink_msg_gps_raw_int.h"
-
-#include <fcntl.h>
-#include <errno.h>
-#include <termios.h>
-#include <unistd.h>
-#include <thread>
-
 using namespace std;
 
 // TODO: Add "this" keyword in front of member variables to make code easier to understand :)
@@ -18,53 +8,70 @@ using namespace std;
 
 // Updates the sensor data
 void FlightController::readData(){
-    while(serial_port > 0) {
-        read(serial_port, &byte, sizeof(byte));
-        if (mavlink_parse_char(MAVLINK_COMM_0, byte, &msg, &status)) {
-            //std::cout << " ok, Received message with ID " << msg.msgid << ", sequence: " << (int) msg.seq << " from component " << (int) msg.compid << " of system " << (int) msg.sysid << std::endl;
-            switch(msg.msgid) {
-                // TODO: This is useless right? Remove if it is
-                case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: { // ID for GLOBAL_POSITION_INT
-                    // Get all fields in payload (into global_position)
-                    mavlink_msg_global_position_int_decode(&msg, &global_position);
-                }
-                    break;
+    
+    // TODO: Dont hard code the serial port plz
+    
+    std::cout << "thread started!!!" << std::endl;
+    while(this->serial_port > 0) {
+        try {
+            //std::cout << "loop started!!!" << std::endl;
+            read(this->serial_port, &this->byte, sizeof(this->byte));
+            //std::cout << a << std::endl;            
+        } catch(const std::overflow_error& e){
+            std::cout << e.what() << std::endl;
+        } catch(const std::runtime_error& e){
+            std::cout << e.what() << std::endl;
+        } catch(const std::exception& e){
+            std::cout << e.what() << std::endl;
+        }
+        //std::cout << "port read!!!" << std::endl;
+        //std::cout << "byte contents:" << (int) this->byte << std::endl;
+        if (mavlink_parse_char(MAVLINK_COMM_0, this->byte, &this->msg, &this->status)) {
+            //std::cout << " ok, Received message with ID " << this->msg.msgid << ", sequence: " << (int) this->msg.seq << " from component " << (int) this->msg.compid << " of system " << (int) this->msg.sysid << std::endl;
+            switch(this->msg.msgid) {
                 case MAVLINK_MSG_ID_GPS_RAW_INT: { // ID for raw gps data
                     // Get all fields in payload (into gps_raw_int)
-                    mavlink_msg_gps_raw_int_decode(&msg, &gps_raw_int);
-                    //std::cout <<"Lat: " << gps_raw_int.lat << ", lon: " << gps_raw_int.lon << ", alt: " << gps_raw_int.alt << std::endl;
-                    data.latitude = gps_raw_int.lat;
-                    data.longitude = gps_raw_int.lon;
-                    data.altitude = gps_raw_int.alt;
+                    mavlink_msg_gps_raw_int_decode(&this->msg, &this->gps_raw_int);
+                    std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
+                    this->data.latitude = this->gps_raw_int.lat;
+                    this->data.longitude = this->gps_raw_int.lon;
+                    this->data.altitude = this->gps_raw_int.alt;
 
                 }
                     break;
                 case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data
                     // Get all fields in payload (into attitude)
-                    mavlink_msg_attitude_decode(&msg, &attitude);
-                    //std::cout <<"roll: " << attitude.roll << ", pitch: " << attitude.pitch << ", yaw: " << attitude.yaw << std::endl;
-                    data.roll = attitude.roll;
-                    data.yaw = attitude.yaw;
-                    data.pitch = attitude.pitch;
+                    mavlink_msg_attitude_decode(&this->msg, &this->attitude);
+                    std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
+                    this->data.roll = this->attitude.roll;
+                    this->data.yaw = this->attitude.yaw;
+                    this->data.pitch = this->attitude.pitch;
                 }
                     break;
                 default:
                     break;
             }
+        } else {
+            //std::cout << "msg not received!!!" << std::endl;
         }
     }
 }
 
 // Open serial connection
 FlightController::FlightController(){
-
-    // TODO: Dont hard code the serial port plz
+    
+    //Open and close python app.
+    system("python3 CubeInit.py");
+    //std::cout << "opening Serial port!!!" << std::endl;
+    // Initialize serial port
     serial_port = open("/dev/ttyACM0", O_RDWR);
     if (serial_port < 0) {
-        std::cout << "Error opening serial port to flight controller!!!" << std::endl;
+        std::cout << "Error opening serial p0rt" << std::endl;
+    } else {
+        std::cout << "Port opened!" << endl;
     }
-
-    std::thread updateDataThread(&FlightController::readData, this);
+        std::thread updateDataThread(&FlightController::readData, this);
+        updateDataThread.join();
 
 }
 
@@ -75,4 +82,10 @@ void FlightController::sendData(){
 
 CubeData FlightController::getData(){
     return this->data;
+}
+
+void FlightController::printData(){
+    std::cout << "FlightController Data: " << std::endl;
+    std::cout << "lat:" << this->data.latitude << "lon" << this->data.longitude << "alt" << this->data.altitude << std::endl;
+    std::cout << "roll:" << this->data.roll << "yaw" << this->data.yaw << "pitch" << this->data.pitch << std::endl;
 }

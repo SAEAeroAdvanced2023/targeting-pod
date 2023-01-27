@@ -1,3 +1,6 @@
+// Compile with: g++ *.cpp -lopencv_core -lopencv_videoio -lopencv_features2d -lopencv_highgui -lopencv_imgproc -lpthread -lpigpio
+
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -9,6 +12,7 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <Eigen/Dense>
 
 #include "camera.h"
 #include "flightcontroller.h"
@@ -40,10 +44,29 @@ void crosshair(int x, int y, Mat frame, int r) {
     line(frame, Point(x, y + r), Point(x ,y + r/2), Scalar(0,0,255), 1);
 }
 
+/*int main(int argc, char *argv[]){
+    Camera camera;
+    Frame frame;
+    int i = 0;
+    while (true){
+        frame = camera.getFrame();
+        if(!frame.image.empty()){
+            i++;
+            cout << "W #" << i << endl; 
+            imshow("Preprocessed", frame.image);
+        } else {
+            i++;
+            cout << "L #" << i << endl;
+        }
+        cv::waitKey(30);
+    }
+}*/
+
+
 int main(int argc, char** argv){
 
     // Init gimbal
-    Gimbal gimbal;
+    //Gimbal gimbal;
 
     // Init Camera
     Camera camera;
@@ -52,7 +75,7 @@ int main(int argc, char** argv){
     FlightController flightController;
 
     // Init IMU
-    IMU imu;
+    //IMU imu;
 
     // Init PointList
     PointList pointList;
@@ -65,14 +88,15 @@ int main(int argc, char** argv){
     Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
 
     // Misc variables
-    string mode = "ready";
+    string mode = "auto";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
     Frame frame;
 
     // Main Loop
-    while (true){
-
+    for (int i = 0; i < 100; i++){ // Use this for testing
+    //while (true){
+        cout << i << ": "; 
         // Just to time each frame (Optional)
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -80,10 +104,10 @@ int main(int argc, char** argv){
         frame = camera.getFrame();
 
         // Get new data from data 
-        flightController.readData();
+        flightController.printData();
 
         // Get new data from gimbal IMU
-        imu.getSensorData();
+        //imu.getSensorData();
 
         // TODO: Load from Flight controller
         // Masking the frames
@@ -104,14 +128,14 @@ int main(int argc, char** argv){
         circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
 
         // Transmit video frame (With the points on plz)
-        transmitter.transmitVideo();
+        //transmitter.transmitVideo();
 
         // Display frames on screen
         imshow("Preprocessed", frame.image);
         // imshow("Masked", mask);
 
         // Check flight controller data to see if mode changed (Unnecessary?)
-        mode = flightController.getData().mode;
+        //mode = flightController.getData().mode;
 
         // Calculate the point and store it
         if (mode == "auto" || mode == "manual"){
@@ -119,8 +143,8 @@ int main(int argc, char** argv){
         }
 
         // Move the gimbal
-        if (mode == "ready" || mode == "manual"){
-            gimbal.trackPoint(keypoints, mask);
+        if (mode == "ready" || mode == "auto"){
+            //gimbal.trackPoint(keypoints, mask);
         }
 
         // Print the amount of time the frame took to process (Optional)
@@ -128,9 +152,13 @@ int main(int argc, char** argv){
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
         cout << fixed << setprecision(10) << time << endl;
 
-        if ((char)cv::waitKey(10) > 0) break;
+        //if ((char)cv::waitKey(10) > 0) break;
+        cv::waitKey(30);
 
     }
+    
+    // Just for testing rn
+    cout << pointList.calculateAverage() << endl;
 
     gpioTerminate();
 

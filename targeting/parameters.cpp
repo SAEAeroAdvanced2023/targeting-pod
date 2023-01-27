@@ -27,7 +27,7 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     if (parseContext.parseTo(blobParams) != JS::Error::NoError) {
         std::string errorStr = parseContext.makeErrorString();
         fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
-        return nullptr;
+        exit(1);
     }
     SimpleBlobDetector::Params params;
     params.minThreshold = blobParams.minThreshold;

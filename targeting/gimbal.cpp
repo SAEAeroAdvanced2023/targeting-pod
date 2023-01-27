@@ -22,10 +22,10 @@ void Gimbal::initServos(){
         exit(1);
     } else {
         gpioSetMode(V_SERVO, PI_OUTPUT);
-        this.v_value = SERVO_MID;
+        this->v_value = SERVO_MID;
         gpioServo(V_SERVO, this->v_value);
         gpioSetMode(H_SERVO, PI_OUTPUT);
-        this.h_value = SERVO_MID;
+        this->h_value = SERVO_MID;
         gpioServo(H_SERVO, this->h_value);
     }
 }
