@@ -4,20 +4,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
-
-#include "../../mavlink/c_library_v2/common/mavlink.h"
-#include "../../mavlink/c_library_v2/common/mavlink_msg_gimbal_device_attitude_status.h"
-
 #include <fcntl.h>
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE = 60; // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
+
 struct IMUData {
-    float_t w;
-    float_t x;
-    float_t y;
-    float_t z;
+    float pitch = 0;
+    float yaw = 0;
+    float roll = 0;
 };
 
 class IMU {
@@ -26,8 +23,10 @@ public:
     IMUData getSensorData();
     void readSensorData();
 private:
-    int serial_port;
+    volatile int imu_port
     IMUData data;
+    const char command[] = {'\x3E', '\x44', '\x00', '\x44', '\x00'};
+    uint8_t message[BUFFER_SIZE];
 };
 
 #endif
