@@ -62,7 +62,6 @@ void crosshair(int x, int y, Mat frame, int r) {
     }
 }*/
 
-
 int main(int argc, char** argv){
 
     // Init gimbal
@@ -75,7 +74,7 @@ int main(int argc, char** argv){
     FlightController flightController;
 
     // Init IMU
-    //IMU imu;
+    IMU imu;
 
     // Init PointList
     PointList pointList;
@@ -83,7 +82,7 @@ int main(int argc, char** argv){
     // Init Transmitter
     Transmitter transmitter;
 
-    // Load parameters and create detector (Shout out json_struct.h)
+    // Load parameters and create detector (Shout out Jørgen Lind)
     string paramText = readFile(BLOB_PARAM_FILE);
     Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
 
@@ -92,7 +91,26 @@ int main(int argc, char** argv){
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
     Frame frame;
-
+    IMUData imuData;
+    CubeData cubeData;
+    
+    // Tracking variables
+    // TODO: Load from file, camera calibration tool should write matrix to file
+    Eigen::MatrixXd ccm_inv(4,4);
+    ccm_inv << 0.00154274, 0, -0.51571205, 0, 0, 0.0015459, -0.40726403, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    Eigen::MatrixXd ccm(3,3);
+    ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
+    //TODO: Get actual values for these
+    Eigen::MatrixXd v_dist(1,3);
+    v_dist << 0, 0, -210;
+    Eigen::MatrixXd g_dist(1,3);
+    g_dist << 0, 0, 0;
+    Eigen::MatrixXd c_dist(1,3);
+    c_dist << 0, 0, 0;
+    double f = 0.035;
+    Eigen::MatrixXd gnd(2,3);
+    gnd << 1, 1, 0, 0, 0, 1;
+    
     // Main Loop
     for (int i = 0; i < 100; i++){ // Use this for testing
     //while (true){
@@ -103,13 +121,13 @@ int main(int argc, char** argv){
         // Get new frame
         frame = camera.getFrame();
 
-        // Get new data from data 
-        flightController.printData();
+        // Get new data from cube
+        cubeData = flightController.getData();
 
         // Get new data from gimbal IMU
-        //imu.getSensorData();
+        imuData = imu.getSensorData();
 
-        // TODO: Load from Flight controller
+        // TODO: Load color from Flight controller (Mavlink message im guessing? Might just go in flightController) 
         // Masking the frames
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
         inRange(hsv, Scalar(0, 150, 150), Scalar(10, 255, 255), mask1);
@@ -127,9 +145,6 @@ int main(int argc, char** argv){
 
         circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
 
-        // Transmit video frame (With the points on plz)
-        //transmitter.transmitVideo();
-
         // Display frames on screen
         imshow("Preprocessed", frame.image);
         // imshow("Masked", mask);
@@ -139,7 +154,8 @@ int main(int argc, char** argv){
 
         // Calculate the point and store it
         if (mode == "auto" || mode == "manual"){
-            pointList.addPoint(transform_dummy(frame.timestamp)); // Dummy function for testing
+            // pointList.addPoint(transform_dummy(frame.timestamp));
+            pointList.addPoint(transform(v_dist, cubeData.roll, cubeData.yaw, cubeData.pitch, imuData.roll, imuData.yaw, imuData.pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
         }
 
         // Move the gimbal

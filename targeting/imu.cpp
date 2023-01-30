@@ -4,6 +4,9 @@
 
 #include <iostream>
 #include <fcntl.h>
+#include <errno.h>
+#include <termios.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <chrono>
 #include <thread>
@@ -15,27 +18,19 @@ using namespace std;
 // TODO: MUTEXES
 // TODO: Thread it just like the flight controller plz
 
-IMU::IMU(){
 
-    // Initialize serial port
-    volatile int imu_port = open("/dev/ttyUSB0",0_RDWR);
-    if (imu_port < 0){
-        cout << "Error opening IMU serial port!!! << endl;"
-        exit(1);
-    }
-    
-}
-
-// TODO: Updates the sensor data
+// Updates the sensor data
 void IMU::readSensorData(){
+    
+    const char command[] = {'\x3E', '\x44', '\x00', '\x44', '\x00'}; // Command to request data
     
     int header_checksum = 0;
     int body_checksum = 0;
     
     for (;;) { // Cool infinite loop notation >:)
         
-        for (char i : command) { // Only available in newer c++ versions? 
-            write(imu_port, &i, sizeof(i));
+        for (int i = 0; i < 5; i++) { // length of command 
+            write(imu_port, &command[i], sizeof(command[i]));
         }
         
         // Wait for response from the gimbal board
@@ -51,7 +46,7 @@ void IMU::readSensorData(){
         }
         body_checksum = 0;
         for (int i = 0; i < (int) message[2]; i++) {
-            body_checksum += (int) messaeg[i+4];
+            body_checksum += (int) message[i+4];
         }
         if (body_checksum % 256 != message[message[2] + 4]) {
             std::cout << "Body checksum invalid" << std::endl;
@@ -60,13 +55,27 @@ void IMU::readSensorData(){
         
         // Crazy bitwise concatenation happening here (Little endian style)
         uint16_t uroll = (message[43] << 8) | (message[42]);
-        roll = uroll / 10.0; // Keep the .0 or cast as float or we lose precision
+        this->data.roll = uroll / 10.0; // Keep the .0 or cast as float or we lose precision
         uint16_t upitch = (message[45] << 8) | (message[44]);
-        pitch = upitch / 10.0;
+        this->data.pitch = upitch / 10.0;
         uint16_t uyaw = (message[47] << 8) | (message[46]);
-        yaw = uyaw / 10.0;
+        this->data.yaw = uyaw / 10.0;
         
     }
+    
+}
+
+IMU::IMU(){
+
+    // Initialize serial port
+    volatile int imu_port = open("/dev/ttyUSB0",O_RDWR);
+    if (imu_port < 0){
+        cout << "Error opening IMU serial port!!!" << endl;
+        exit(1);
+    }
+    
+    std::thread updateIMUThread(&IMU::readSensorData, this);
+    updateIMUThread.join();
     
 }
 

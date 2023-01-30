@@ -9,7 +9,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE = 60; // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
+#define BUFFER_SIZE 60 // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
 
 struct IMUData {
     float pitch = 0;
@@ -23,9 +23,8 @@ public:
     IMUData getSensorData();
     void readSensorData();
 private:
-    volatile int imu_port
+    volatile int imu_port;
     IMUData data;
-    const char command[] = {'\x3E', '\x44', '\x00', '\x44', '\x00'};
     uint8_t message[BUFFER_SIZE];
 };
 
