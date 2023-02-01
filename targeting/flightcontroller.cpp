@@ -32,7 +32,7 @@ void FlightController::readData(){
                 case MAVLINK_MSG_ID_GPS_RAW_INT: { // ID for raw gps data
                     // Get all fields in payload (into gps_raw_int)
                     mavlink_msg_gps_raw_int_decode(&this->msg, &this->gps_raw_int);
-                    std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
+                    //std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
                     this->data.latitude = this->gps_raw_int.lat;
                     this->data.longitude = this->gps_raw_int.lon;
                     this->data.altitude = this->gps_raw_int.alt;
@@ -42,7 +42,7 @@ void FlightController::readData(){
                 case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
-                    std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
+                    //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
                     this->data.roll = this->attitude.roll;
                     this->data.yaw = this->attitude.yaw;
                     this->data.pitch = this->attitude.pitch;
@@ -68,10 +68,11 @@ FlightController::FlightController(){
     if (serial_port < 0) {
         std::cout << "Error opening serial p0rt" << std::endl;
     } else {
-        std::cout << "Port opened!" << endl;
+        //std::cout << "Port opened!" << endl;
     }
         std::thread updateDataThread(&FlightController::readData, this);
-        updateDataThread.join();
+        //updateDataThread.join();
+        updateDataThread.detach();
 
 }
 

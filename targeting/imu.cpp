@@ -60,6 +60,7 @@ void IMU::readSensorData(){
         this->data.pitch = upitch / 10.0;
         uint16_t uyaw = (message[47] << 8) | (message[46]);
         this->data.yaw = uyaw / 10.0;
+        //std::cout << "Roll: " << (int16_t) uroll / 10.0 << " Pitch: " << (int16_t) upitch / 10.0 << " Yaw: " << (int16_t) uyaw / 10.0 << std::endl;
         
     }
     
@@ -68,14 +69,15 @@ void IMU::readSensorData(){
 IMU::IMU(){
 
     // Initialize serial port
-    volatile int imu_port = open("/dev/ttyUSB0",O_RDWR);
+    imu_port = open("/dev/ttyACM1",O_RDWR);
     if (imu_port < 0){
         cout << "Error opening IMU serial port!!!" << endl;
         exit(1);
     }
     
     std::thread updateIMUThread(&IMU::readSensorData, this);
-    updateIMUThread.join();
+    //updateIMUThread.join();
+    updateIMUThread.detach();
     
 }
 

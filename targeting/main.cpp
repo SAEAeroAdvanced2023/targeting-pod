@@ -87,6 +87,7 @@ int main(int argc, char** argv){
     Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
 
     // Misc variables
+    cv::namedWindow("Display", CV_WINDOW_AUTOSIZE);
     string mode = "auto";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
@@ -143,18 +144,19 @@ int main(int argc, char** argv){
             line(frame.image, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
         }
 
-        circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
+        crosshair(mask.cols/2, mask.rows/2, frame.image, 40);
+        //circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
 
         // Display frames on screen
-        imshow("Preprocessed", frame.image);
+        imshow("Display", frame.image);
         // imshow("Masked", mask);
 
         // Check flight controller data to see if mode changed (Unnecessary?)
         //mode = flightController.getData().mode;
 
         // Calculate the point and store it
-        if (mode == "auto" || mode == "manual"){
-            // pointList.addPoint(transform_dummy(frame.timestamp));
+        if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
+            //pointList.addPoint(transform_dummy(frame.timestamp));
             pointList.addPoint(transform(v_dist, cubeData.roll, cubeData.yaw, cubeData.pitch, imuData.roll, imuData.yaw, imuData.pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
         }
 

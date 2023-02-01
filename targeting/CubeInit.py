@@ -11,13 +11,13 @@ from pymavlink import mavutil
 import time
 
 def main():
-    print("Attempting connection")
+    #print("Attempting connection")
         # TODO : when forcing the code to stop, it has issues running again right away (usually fixed by power cycling the cube)
     vehicle = mavutil.mavlink_connection(device="/dev/ttyACM0", baud="57600")
-    print("Waiting for heartbeat...")
+    #print("Waiting for heartbeat...")
     vehicle.wait_heartbeat()
-    print("Success!!!")
-    print("Setting up receivers...")
+    #print("Success!!!")
+    #print("Setting up receivers...")
     # Message codes:
     # GPS_RAW_INT: 24
     # GPS_STATUS: 25
@@ -39,7 +39,7 @@ def main():
             24, # Getting GPS Raw Data
             50000, # The interval between two messages (in microseconds)
             0,0,0,0,0) #Keep zero
-    print("Cube configured")
+    print("Cube configured via Python")
     
 if __name__ == "__main__":
     main()
