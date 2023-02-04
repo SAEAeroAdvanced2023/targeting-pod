@@ -103,7 +103,7 @@ int main(int argc, char** argv){
     ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
     //TODO: Get actual values for these
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -210;
+    v_dist << 0, 0, 78;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
@@ -113,7 +113,7 @@ int main(int argc, char** argv){
     gnd << 1, 1, 0, 0, 0, 1;
     
     // Main Loop
-    for (int i = 0; i < 100; i++){ // Use this for testing
+    for (int i = 0; i < 1000; i++){ // Use this for testing
     //while (true){
         cout << i << ": "; 
         // Just to time each frame (Optional)
@@ -154,6 +154,10 @@ int main(int argc, char** argv){
         // Check flight controller data to see if mode changed (Unnecessary?)
         //mode = flightController.getData().mode;
 
+        cubeData.roll = 0;
+        cubeData.yaw = 0;
+        cubeData.pitch = 0;
+
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
@@ -178,7 +182,7 @@ int main(int argc, char** argv){
     // Just for testing rn
     cout << pointList.calculateAverage() << endl;
 
-    gpioTerminate();
+    //gpioTerminate();
 
     return 0;
 

@@ -1,7 +1,7 @@
 from gpiozero import Device, Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 from time import sleep
-from pynput import keyboard
+#from pynput import keyboard
 
 Device.pin_factory = PiGPIOFactory()
 oservo = Servo(24)
@@ -21,8 +21,10 @@ while True:
 	print("Choose value (-100 to 100)")
 	n = int(input()) / 100
 	if servo == 0 :
+		print(f"Servo 0 set to value {n}\n")
 		iservo.value = n
 	else:
+		print(f"Servo 1 set to value {n}\n")
 		oservo.value = n
 
 '''while True:

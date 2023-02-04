@@ -19,12 +19,12 @@ using namespace std;
 //TODO: Define the data
 struct CubeData{
     string mode;
-    int32_t latitude = 0;
-    int32_t longitude = 0;
-    int32_t altitude = 0;
-    int32_t roll = 0;
-    int32_t yaw = 0;
-    int32_t pitch = 0;
+    double latitude = 0;
+    double longitude = 0;
+    double altitude = 0;
+    double roll = 0;
+    double yaw = 0;
+    double pitch = 0;
 };
 
 class FlightController{

@@ -42,7 +42,7 @@ void FlightController::readData(){
                 case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
-                    //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
+                    std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
                     this->data.roll = this->attitude.roll;
                     this->data.yaw = this->attitude.yaw;
                     this->data.pitch = this->attitude.pitch;
@@ -54,6 +54,9 @@ void FlightController::readData(){
         } else {
             //std::cout << "msg not received!!!" << std::endl;
         }
+
+	printData();
+
     }
 }
 
@@ -64,7 +67,7 @@ FlightController::FlightController(){
     system("python3 CubeInit.py");
     //std::cout << "opening Serial port!!!" << std::endl;
     // Initialize serial port
-    serial_port = open("/dev/ttyACM0", O_RDWR);
+    serial_port = open("/dev/ttyACM1", O_RDWR);
     if (serial_port < 0) {
         std::cout << "Error opening serial p0rt" << std::endl;
     } else {

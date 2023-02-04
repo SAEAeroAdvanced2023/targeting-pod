@@ -13,7 +13,7 @@ import time
 def main():
     #print("Attempting connection")
         # TODO : when forcing the code to stop, it has issues running again right away (usually fixed by power cycling the cube)
-    vehicle = mavutil.mavlink_connection(device="/dev/ttyACM0", baud="57600")
+    vehicle = mavutil.mavlink_connection(device="/dev/ttyACM1", baud="57600")
     #print("Waiting for heartbeat...")
     vehicle.wait_heartbeat()
     #print("Success!!!")
