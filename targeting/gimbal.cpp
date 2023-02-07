@@ -1,7 +1,12 @@
 #include <iostream>
 #include <pigpio.h>
 #include <opencv2/core.hpp>
+#include <cmath>
 #include "gimbal.h"
+
+double toRad(double x){
+    return x * M_PI/180;
+}
 
 Gimbal::Gimbal(){
     initServos();
@@ -21,36 +26,56 @@ void Gimbal::initServos(){
         cout << "Could not init servos :( Exiting..." << endl;
         exit(1);
     } else {
-        gpioSetMode(V_SERVO, PI_OUTPUT);
-        this->v_value = SERVO_MID;
-        gpioServo(V_SERVO, this->v_value);
-        gpioSetMode(H_SERVO, PI_OUTPUT);
-        this->h_value = SERVO_MID;
-        gpioServo(H_SERVO, this->h_value);
+        gpioSetMode(SERVO1, PI_OUTPUT);
+        this->servo1_value = SERVO_MID;
+        gpioServo(SERVO1, this->v_value);
+        gpioSetMode(SERVO2, PI_OUTPUT);
+        this->servo2_value = SERVO_MID;
+        gpioServo(SERVO2, this->h_value);
     }
 }
 
-// Automatically moves gimbal to track point
+// Automatically moves gimbal to track point (Pitch Roll configuration)
 // TODO: Improve algorithm
 void Gimbal::trackPoint(vector<cv::KeyPoint> keypoints, cv::Mat mask){
     if (keypoints.size() == 1){
             int hdif = abs(mask.cols/2 - keypoints[0].pt.x);
             if (keypoints[0].pt.x > mask.cols/2){
-                h_value = servo_limit(h_value - (hdif * SERVO_INC));
-                gpioServo(H_SERVO, h_value);
+                servo1_value = servo_limit(servo1_value - (hdif * SERVO_INC));
+                gpioServo(SERVO1, servo1_value);
             } else {
-                h_value = servo_limit(h_value + (hdif * SERVO_INC));
-                gpioServo(H_SERVO, h_value);
+                servo1_value = servo_limit(servo1_value + (hdif * SERVO_INC));
+                gpioServo(SERVO1, servo1_value);
             }
             int vdif = abs(mask.rows/2 - keypoints[0].pt.y);
             if (keypoints[0].pt.y > mask.rows/2){
-                v_value = servo_limit(v_value - (vdif * SERVO_INC));
-                gpioServo(V_SERVO, v_value);
+                servo2_value = servo_limit(servo2_value - (vdif * SERVO_INC));
+                gpioServo(SERVO2, servo2_value);
             } else {
-                v_value = servo_limit(v_value + (vdif * SERVO_INC));
-                gpioServo(V_SERVO, v_value);
+                servo2_value = servo_limit(servo2_value + (vdif * SERVO_INC));
+                gpioServo(SERVO2, servo2_value);
             }
         }
+}
+
+// Automatically moves gimbal to track point (Pitch Yaw configuration)
+void Gimbal::trackPointPolar(vector<cv::KeyPoint> keypoints, cv::Mat mask){
+    if (keypoints.size() == 1) {
+        int theta = 0;
+        int r = 0;
+        // Keypoint coordinates start at the top left of the frame
+        int x = keypoints[0].pt.x - (mask.cols/2);
+        int y = (mask.cols/2) - keypoints[0].pt.y;
+
+        r = std::sqrt((double) std::pow(x,2) + std::pow(y,2));
+        // TODO: We can use data from the sensors and testing to make this a bit more accurate, no real reason to use SERVO_INC ;)
+        theta = std::atan((double) (y/x)) * (180/M_PI) - 90; // Subtracting 90 degrees as our 0 degrees is along the positive y-axis
+
+        servo1_value = servo_limit(servo1_value + ((theta/180) / (SERVO_MAX - SERVO_MID))); // Taking this as a percentage of the 180 degrees rotation
+        gpioServo(SERVO1, servo1_value);
+        servo2_value = servo_limit(servo2_value + r);
+        gpioServo(SERVO2, servo2_value);
+    }
 }
 
 // TODO: Implementation
