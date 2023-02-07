@@ -112,8 +112,8 @@ GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
     double yaw = 0;
-    double pitch = -M_PI/5;
-    double roll = M_PI/2;
+    double pitch = -M_PI/2;
+    double roll = 0;
     double g_yaw = 0;
     double g_pitch = 0;
     double g_roll = 0;

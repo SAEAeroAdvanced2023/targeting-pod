@@ -162,7 +162,8 @@ int main(int argc, char** argv){
 
         // Move the gimbal
         if (mode == "ready" || mode == "auto"){
-            //gimbal.trackPoint(keypoints, mask);
+            //gimbal.trackPoint(keypoints, mask); // Pitch Roll config
+            //gimbal.trackPointPolar(keypoints, mask); // Pitch Yaw config
         }
 
         // Print the amount of time the frame took to process (Optional)
