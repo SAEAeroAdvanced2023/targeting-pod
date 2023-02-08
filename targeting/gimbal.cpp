@@ -28,10 +28,10 @@ void Gimbal::initServos(){
     } else {
         gpioSetMode(SERVO1, PI_OUTPUT);
         this->servo1_value = SERVO_MID;
-        gpioServo(SERVO1, this->v_value);
+        gpioServo(SERVO1, this->servo1_value);
         gpioSetMode(SERVO2, PI_OUTPUT);
         this->servo2_value = SERVO_MID;
-        gpioServo(SERVO2, this->h_value);
+        gpioServo(SERVO2, this->servo2_value);
     }
 }
 

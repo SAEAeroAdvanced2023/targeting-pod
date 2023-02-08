@@ -103,7 +103,7 @@ int main(int argc, char** argv){
     ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
     //TODO: Get actual values for these
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, 78;
+    v_dist << 0, 0, -78;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
@@ -113,7 +113,7 @@ int main(int argc, char** argv){
     gnd << 1, 1, 0, 0, 0, 1;
     
     // Main Loop
-    for (int i = 0; i < 1000; i++){ // Use this for testing
+    for (int i = 0; i < 100; i++){ // Use this for testing
     //while (true){
         cout << i << ": "; 
         // Just to time each frame (Optional)
@@ -149,19 +149,15 @@ int main(int argc, char** argv){
 
         // Display frames on screen
         imshow("Display", frame.image);
-        // imshow("Masked", mask);
+        imshow("Masked", mask);
 
         // Check flight controller data to see if mode changed (Unnecessary?)
         //mode = flightController.getData().mode;
 
-        cubeData.roll = 0;
-        cubeData.yaw = 0;
-        cubeData.pitch = 0;
-
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            pointList.addPoint(transform(v_dist, cubeData.roll, cubeData.yaw, cubeData.pitch, imuData.roll, imuData.yaw, imuData.pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
+            pointList.addPoint(transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/, 0/*toRad(imuData.roll)*/, 0/*toRad(imuData.yaw)*/, 0/*toRad(imuData.pitch)*/ - (M_PI/2), ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
         }
 
         // Move the gimbal
@@ -174,6 +170,7 @@ int main(int argc, char** argv){
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
         cout << fixed << setprecision(10) << time << endl;
+        cout << "Frame size (x,y): (" << mask.cols << "," << mask.rows << ")" << endl;
 
         //if ((char)cv::waitKey(10) > 0) break;
         cv::waitKey(30);
@@ -182,7 +179,7 @@ int main(int argc, char** argv){
     
     // Just for testing rn
     cout << pointList.calculateAverage() << endl;
-
+    cout << imuData.pitch << endl;
     //gpioTerminate();
 
     return 0;
