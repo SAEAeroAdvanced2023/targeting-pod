@@ -4,6 +4,8 @@
 #include <cmath>
 #include "gimbal.h"
 
+// TODO: Function that combines setting servoX_value and writing in together
+
 double toRad(double x){
     return x * M_PI/180;
 }

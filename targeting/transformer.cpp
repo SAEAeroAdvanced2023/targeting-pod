@@ -103,8 +103,8 @@ GPSPoint transform_dummy(time_t timestamp){
     ccm_inv << 0.00154274, 0, -0.51571205, 0, 0, 0.0015459, -0.40726403, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     Eigen::MatrixXd ccm(3,3);
     ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
-    int pix_x = 0;
-    int pix_y = 0;
+    int pix_x = 334;
+    int pix_y = 263;
     Eigen::MatrixXd v_dist(1,3);
     v_dist << 0, 0, -210;
     Eigen::MatrixXd g_dist(1,3);
@@ -121,4 +121,10 @@ GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     return transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd, timestamp);
+}
+
+int main() {
+    time_t x = 0;
+    GPSPoint q = transform_dummy(x);
+    std::cout << q.point << std::endl;
 }
