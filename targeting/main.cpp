@@ -98,9 +98,9 @@ int main(int argc, char** argv){
     // Tracking variables
     // TODO: Load from file, camera calibration tool should write matrix to file
     Eigen::MatrixXd ccm_inv(4,4);
-    ccm_inv << 0.00154274, 0, -0.51571205, 0, 0, 0.0015459, -0.40726403, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    ccm_inv << 0.00204358, 0, -0.66121428, 0, 0, 0.00204224, -0.47667228, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     Eigen::MatrixXd ccm(3,3);
-    ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
+    ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
     //TODO: Get actual values for these
     Eigen::MatrixXd v_dist(1,3);
     v_dist << 0, 0, -78;
@@ -108,7 +108,7 @@ int main(int argc, char** argv){
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
-    double f = 0.035;
+    double f = 0.00304;
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     
