@@ -69,7 +69,7 @@ void IMU::readSensorData(){
 IMU::IMU(){
 
     // Initialize serial port
-    imu_port = open("/dev/ttyACM2",O_RDWR);
+    imu_port = open("/dev/ttyACM0",O_RDWR);
     if (imu_port < 0){
         cout << "Error opening IMU serial port!!!" << endl;
         exit(1);
