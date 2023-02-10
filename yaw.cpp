@@ -9,9 +9,7 @@
 #include <thread>
 #include <pigpio.h>
 
-void func(){
-
-}
+// This should literally just counteract the yaw stabilization of the gimbal because we cant (??) disable it >:)
 
 int main() {
 
@@ -24,7 +22,7 @@ int main() {
     }
 
     if (gpioInitialise() < 0) {
-        std::cout << "Initializtion failed uwu" << std::endl;
+        std::cout << "Initialization failed uWu" << std::endl;
 	exit(1);
     }
 
@@ -37,7 +35,6 @@ int main() {
 
     int header_checksum = 0;
     int body_checksum = 0;
-    double prev = 0;
 
     for (;;) { // Cool infinite loop notation >:)
 
@@ -66,22 +63,25 @@ int main() {
 
         int16_t yaw = (message[47] << 8) | (message[46]);
         yaw /= 10.0;
-	yaw = prev - yaw;
-	yaw = yaw % 180;
 
-	std::cout << "Yaw: " << yaw << std::endl;
+        std::cout << "Yaw: " << yaw << std::endl;
 
-	value = value + ((double) yaw/180) * 1000;
-	if (value > 2500) {
-		value = value - 2000;
-	} else if (value < 500) {
-		value = value + 2000;
-	}
+        value = value + ((double)((double) yaw/180)) * 1000; // S-Tier type casting going on here
 
-	gpioServo(pin, value);
+        // Should work unless we perform a 360 degree yaw axis spin in 0.1 seconds
+        if (value > 2500) {
+            value = value - 2000;
+        } else if (value < 500) {
+            value = value + 2000;
+        }
 
-	std::cout << "Value: " << value << std::endl;
-	prev = yaw;
+        gpioServo(pin, value);
+
+        std::cout << "Value: " << value << std::endl;
+
+        // Wait before next iteration. Lets the motor spin to where it needs to spin before moving again
+        // Experiment with this value, lower or higher may be better
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     }
 
