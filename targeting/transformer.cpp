@@ -122,9 +122,3 @@ GPSPoint transform_dummy(time_t timestamp){
     gnd << 1, 1, 0, 0, 0, 1;
     return transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd, timestamp);
 }
-
-int main() {
-    time_t x = 0;
-    GPSPoint q = transform_dummy(x);
-    std::cout << q.point << std::endl;
-}

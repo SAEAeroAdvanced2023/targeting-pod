@@ -131,8 +131,8 @@ int main(int argc, char** argv){
         // TODO: Load color from Flight controller (Mavlink message im guessing? Might just go in flightController) 
         // Masking the frames
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
-        inRange(hsv, Scalar(0, 150, 150), Scalar(10, 255, 255), mask1);
-        inRange(hsv, Scalar(170, 150, 150), Scalar(180, 255, 255), mask2);
+        inRange(hsv, Scalar(0, 100, 150), Scalar(10, 255, 255), mask1);
+        inRange(hsv, Scalar(170, 100, 150), Scalar(180, 255, 255), mask2);
         mask = mask1 | mask2; // Bitwise OR instead of addition!!!
 
         // Detecting the blob and drawing on the frame
@@ -157,7 +157,7 @@ int main(int argc, char** argv){
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            pointList.addPoint(transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/, 0/*toRad(imuData.roll)*/, 0/*toRad(imuData.yaw)*/, 0/*toRad(imuData.pitch)*/ - (M_PI/2), ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
+            pointList.addPoint(transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), 0/*toRad(imuData.roll)*/, 0/*toRad(imuData.yaw)*/, 0/*toRad(imuData.pitch)*/, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
         }
 
         // Move the gimbal

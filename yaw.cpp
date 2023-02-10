@@ -25,6 +25,7 @@ int main() {
 
     if (gpioInitialise() < 0) {
         std::cout << "Initializtion failed uwu" << std::endl;
+	exit(1);
     }
 
     gpioSetMode(pin, PI_OUTPUT);
@@ -36,6 +37,7 @@ int main() {
 
     int header_checksum = 0;
     int body_checksum = 0;
+    double prev = 0;
 
     for (;;) { // Cool infinite loop notation >:)
 
@@ -64,8 +66,22 @@ int main() {
 
         int16_t yaw = (message[47] << 8) | (message[46]);
         yaw /= 10.0;
+	yaw = prev - yaw;
+	yaw = yaw % 180;
 
+	std::cout << "Yaw: " << yaw << std::endl;
 
+	value = value + ((double) yaw/180) * 1000;
+	if (value > 2500) {
+		value = value - 2000;
+	} else if (value < 500) {
+		value = value + 2000;
+	}
+
+	gpioServo(pin, value);
+
+	std::cout << "Value: " << value << std::endl;
+	prev = yaw;
 
     }
 
