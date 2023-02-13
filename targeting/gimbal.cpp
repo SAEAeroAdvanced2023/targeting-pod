@@ -5,6 +5,7 @@
 #include "gimbal.h"
 
 // TODO: Function that combines setting servoX_value and writing in together
+// TODO: Center towards optical center for maximum accuracy, you can get a whole magnitude more precision using this method
 
 double toRad(double x){
     return x * M_PI/180;

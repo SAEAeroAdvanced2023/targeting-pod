@@ -5,6 +5,10 @@
 
 using namespace std;
 
+// TODO: (CRITICAL) G_YAW and G_ROLL are SWAPPED!!! THIS IS AN ERROR!!! Recheck the math before just swapping the values in the function
+
+// NOTE: This uses North, East, Down convention, and accepts angles in radians. Ensure values are in the correct format
+
 // Returns a Matrix for translation? Ask Mo for info
 Eigen::MatrixXd transformation_translation(double x, double y, double z){
     Eigen::MatrixXd t(4,4);
@@ -100,25 +104,32 @@ GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch
 
 GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd ccm_inv(4,4);
-    ccm_inv << 0.00154274, 0, -0.51571205, 0, 0, 0.0015459, -0.40726403, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    ccm_inv << 0.00204358, 0, -0.66121428, 0, 0, 0.00204224, -0.47667228, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     Eigen::MatrixXd ccm(3,3);
-    ccm << 648.19832304, 0, 334.28368528, 0, 646.87336044, 263.44824863, 0, 0, 1;
-    int pix_x = 334;
-    int pix_y = 263;
+    ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
+    int pix_x = 323;
+    int pix_y = 233;
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -210;
+    v_dist << 0, 0, -100;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
     double yaw = 0;
-    double pitch = -M_PI/2;
+    double pitch = (-M_PI/2) + M_PI/3; // (ask Mo why the -M_PI/2 is there if you wanna know)
     double roll = 0;
     double g_yaw = 0;
     double g_pitch = 0;
     double g_roll = 0;
-    double f = 0.035;
+    double f = 0.304;
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     return transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd, timestamp);
+}
+
+int main(){
+
+    time_t time;
+    std::cout << transform_dummy(time).point << std::endl;
+
 }

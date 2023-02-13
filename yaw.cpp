@@ -14,7 +14,7 @@
 int main() {
 
     uint8_t message[60];
-    int pin = 23;
+    int pin = 24;
     int imu_port = open("/dev/ttyACM0", O_RDWR);
     if (imu_port < 0) {
         std::cout << "Erororrr :( :(" << std::endl;
@@ -66,7 +66,8 @@ int main() {
 
         std::cout << "Yaw: " << yaw << std::endl;
 
-        value = value + ((double)((double) yaw/180)) * 1000; // S-Tier type casting going on here
+        // value = ((double)((double) yaw/180)) * 500; // S-Tier type casting going on here
+	value = 1500 + (((double)yaw/180) * 500);
 
         // Should work unless we perform a 360 degree yaw axis spin in 0.1 seconds
         if (value > 2500) {
@@ -81,7 +82,7 @@ int main() {
 
         // Wait before next iteration. Lets the motor spin to where it needs to spin before moving again
         // Experiment with this value, lower or higher may be better
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     }
 
