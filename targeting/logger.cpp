@@ -24,7 +24,9 @@ Logger::Logger(){}
 
 // Initializes the logger
 void Logger::initLogger(){
-    logger.logFile.open("./logs/" + currentDateTime() + ".log");
+    std::string s = currentDateTime();
+    logger.logFile.open("./logs/" + s + ".log");
+    //logger.logFile.open("./logs/" + s + ".csv");
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (now - logger.begin).count() / 1000000000;
     logger.logFile << "[" + std::to_string(time) + "] INIT: Logger started :)" << std::endl;
@@ -60,6 +62,9 @@ void Logger::logDebug(std::string x){
 
 // Closes the file, you should do this ;)
 void Logger::closeLogger() {
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (now - logger.begin).count() / 1000000000;
+    logger.logFile << "[" + std::to_string(time) + "] CLOSE: Closing Logger :)" << std::endl;
     logger.logFile.flush();
     logger.logFile.close();
 }

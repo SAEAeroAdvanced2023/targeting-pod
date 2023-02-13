@@ -22,7 +22,7 @@
 #include "parameters.h"
 #include "pointlist.h"
 #include "transformer.h"
-#include "transmitter.h"
+#include "logger.h"
 
 #include "json_struct.h"
 
@@ -63,6 +63,9 @@ void crosshair(int x, int y, Mat frame, int r) {
 }*/
 
 int main(int argc, char** argv){
+    
+    // Init logger, should be the first thing done
+    Logger::initLogger();
 
     // Init gimbal
     //Gimbal gimbal;
@@ -78,9 +81,6 @@ int main(int argc, char** argv){
 
     // Init PointList
     PointList pointList;
-
-    // Init Transmitter
-    Transmitter transmitter;
 
     // Load parameters and create detector (Shout out Jørgen Lind)
     string paramText = readFile(BLOB_PARAM_FILE);
@@ -112,9 +112,12 @@ int main(int argc, char** argv){
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     
+    Logger::logEvent("Tracking loop started");
+    
     // Main Loop
     for (int i = 0; i < 100; i++){ // Use this for testing
     //while (true){
+    
         cout << i << ": "; 
         // Just to time each frame (Optional)
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -170,7 +173,7 @@ int main(int argc, char** argv){
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
         cout << fixed << setprecision(10) << time << endl;
-        cout << "Frame size (x,y): (" << mask.cols << "," << mask.rows << ")" << endl;
+        Logger::logDebug("Frame " + std::to_string(i) + " process time: " + std::to_string(time) + "s");
 
         //if ((char)cv::waitKey(10) > 0) break;
         cv::waitKey(30);
@@ -178,9 +181,12 @@ int main(int argc, char** argv){
     }
     
     // Just for testing rn
-    cout << pointList.calculateAverage() << endl;
-    cout << imuData.pitch << endl;
+    Eigen::MatrixXd m = pointList.calculateAverage();
+    cout << m << endl;
+    Logger::logEvent("Calculated point: " + vec2string(m));
     //gpioTerminate();
+
+    Logger::closeLogger();
 
     return 0;
 

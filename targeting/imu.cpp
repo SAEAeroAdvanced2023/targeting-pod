@@ -12,12 +12,11 @@
 #include <thread>
 
 #include "imu.h"
+#include "logger.h"
 
 using namespace std;
 
 // TODO: MUTEXES
-// TODO: Thread it just like the flight controller plz
-
 
 // Updates the sensor data
 void IMU::readSensorData(){
@@ -26,6 +25,8 @@ void IMU::readSensorData(){
     
     int header_checksum = 0;
     int body_checksum = 0;
+    
+    Logger::logEvent("IMU sensor data loop started");
     
     for (;;) { // Cool infinite loop notation >:)
         
@@ -42,6 +43,7 @@ void IMU::readSensorData(){
         header_checksum = message[1] + message[2];
         if (header_checksum % 256 != message[3]) {
             std::cout << "Header checksum invalid" << std::endl;
+            Logger::logWarning("Header checksum from gimbal IMU invalid");
             continue;
         }
         body_checksum = 0;
@@ -50,6 +52,7 @@ void IMU::readSensorData(){
         }
         if (body_checksum % 256 != message[message[2] + 4]) {
             std::cout << "Body checksum invalid" << std::endl;
+            Logger::logWarning("Body checksum from gimbal IMU invalid");
             continue;
         }
         
@@ -69,14 +72,16 @@ void IMU::readSensorData(){
 IMU::IMU(){
 
     // Initialize serial port
-    imu_port = open("/dev/ttyACM0",O_RDWR);
+    imu_port = open(IMUSerialPort.c_str() ,O_RDWR);
     if (imu_port < 0){
         cout << "Error opening IMU serial port!!!" << endl;
+        Logger::logCritical("Could not open IMU serial port " + IMUSerialPort);
         exit(1);
+    } else {
+        Logger::logEvent("IMU serial port " + IMUSerialPort + " opened");
     }
     
     std::thread updateIMUThread(&IMU::readSensorData, this);
-    //updateIMUThread.join();
     updateIMUThread.detach();
     
 }

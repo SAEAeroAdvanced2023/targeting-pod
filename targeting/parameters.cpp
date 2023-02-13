@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "parameters.h"
 #include "json_struct.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     if (parseContext.parseTo(blobParams) != JS::Error::NoError) {
         std::string errorStr = parseContext.makeErrorString();
         fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
+        Logger::logCritical("Could not parse parameters for blob detection");
         exit(1);
     }
     SimpleBlobDetector::Params params;
@@ -44,5 +46,6 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     params.filterByColor = blobParams.filterByColor;
     params.blobColor = blobParams.blobColor;
     Ptr <SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+    Logger::logEvent("Parameters parsed for blob detector");
     return detector;
 }

@@ -11,6 +11,8 @@
 
 #define BUFFER_SIZE 60 // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
 
+const std::string IMUSerialPort = "/dev/ttyACM0";
+
 struct IMUData {
     float pitch = 0;
     float yaw = 0;

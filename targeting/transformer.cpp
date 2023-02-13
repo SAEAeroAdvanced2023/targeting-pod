@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include "pointlist.h"
 #include "transformer.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -102,6 +103,12 @@ GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch
 
 }
 
+std::string vec2string(Eigen::MatrixXd x){
+    std::stringstream ss;
+    ss << x;
+    return ss.str();
+}
+
 GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd ccm_inv(4,4);
     ccm_inv << 0.00204358, 0, -0.66121428, 0, 0, 0.00204224, -0.47667228, 0, 0, 0, 1, 0, 0, 0, 0, 1;
@@ -116,7 +123,7 @@ GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
     double yaw = 0;
-    double pitch = (-M_PI/2) + M_PI/3; // (ask Mo why the -M_PI/2 is there if you wanna know)
+    double pitch = (-M_PI/2); // (ask Mo why the -M_PI/2 is there if you wanna know)
     double roll = 0;
     double g_yaw = 0;
     double g_pitch = 0;
@@ -125,11 +132,4 @@ GPSPoint transform_dummy(time_t timestamp){
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     return transform(v_dist, roll, yaw, pitch, g_roll, g_yaw, g_pitch, ccm, ccm_inv, pix_x, pix_y, g_dist, c_dist, f, gnd, timestamp);
-}
-
-int main(){
-
-    time_t time;
-    std::cout << transform_dummy(time).point << std::endl;
-
 }

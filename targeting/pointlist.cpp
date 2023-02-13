@@ -2,6 +2,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "pointlist.h"
+#include "logger.h"
 
 using namespace std;
 

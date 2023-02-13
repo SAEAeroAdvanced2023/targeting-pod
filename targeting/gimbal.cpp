@@ -3,6 +3,7 @@
 #include <opencv2/core.hpp>
 #include <cmath>
 #include "gimbal.h"
+#include "logger.h"
 
 // TODO: Function that combines setting servoX_value and writing in together
 // TODO: Center towards optical center for maximum accuracy, you can get a whole magnitude more precision using this method
@@ -27,6 +28,7 @@ int Gimbal::servo_limit(int x){
 void Gimbal::initServos(){
     if(gpioInitialise() < 0){ //Initialization Failed
         cout << "Could not init servos :( Exiting..." << endl;
+        Logger::logCritical("Could not initialize GPIO for servos");
         exit(1);
     } else {
         gpioSetMode(SERVO1, PI_OUTPUT);
@@ -35,6 +37,7 @@ void Gimbal::initServos(){
         gpioSetMode(SERVO2, PI_OUTPUT);
         this->servo2_value = SERVO_MID;
         gpioServo(SERVO2, this->servo2_value);
+        Logger::logEvent("Gimbal GPIO initialized");
     }
 }
 

@@ -124,7 +124,7 @@ if __name__ == '__main__':
     CCM = np.array([[648.19832304,0.,334.28368528], [0.,646.87336044,263.44824863], [0.,0.,1.]])
 # pixels seen in sensor frame
     pix_x = 334
-    pix_y = 200
+    pix_y = 263
 # vehicule distance from inertial point (GPS coordinates)
     v_dist = np.array([0, 0, -82])
 # coordinates of gimbal wtr to centroid of the aircraft
@@ -133,12 +133,12 @@ if __name__ == '__main__':
     c_dist = np.array([0,0,0])
 # yaw, pitch, roll = aircraft rotation
     yaw=0
-    pitch=(-np.pi/2+0.45379)
+    pitch=(-np.pi/2)
     roll=0
 
 #g_yaw, g_pitch, g_roll = gimbal's rotation
     g_yaw=0
-    g_pitch=0
+    g_pitch=np.pi/4
     g_roll=0
 
 # focal length of camera in meters

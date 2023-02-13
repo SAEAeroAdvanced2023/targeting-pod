@@ -16,6 +16,8 @@
 
 using namespace std;
 
+const std::string flightControllerSerialPort = "/dev/ttyACM1";
+
 //TODO: Define the data
 struct CubeData{
     string mode;

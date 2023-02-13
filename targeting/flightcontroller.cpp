@@ -1,4 +1,5 @@
 #include <iostream>
+#include "logger.h"
 #include "flightcontroller.h"
 
 using namespace std;
@@ -9,20 +10,14 @@ using namespace std;
 // Updates the sensor data
 void FlightController::readData(){
     
-    // TODO: Dont hard code the serial port plz
+    Logger::logEvent("Starting Flight controller loop");
     
-    std::cout << "thread started!!!" << std::endl;
     while(this->serial_port > 0) {
         try {
-            //std::cout << "loop started!!!" << std::endl;
-            read(this->serial_port, &this->byte, sizeof(this->byte));
-            //std::cout << a << std::endl;            
-        } catch(const std::overflow_error& e){
-            std::cout << e.what() << std::endl;
-        } catch(const std::runtime_error& e){
-            std::cout << e.what() << std::endl;
+            read(this->serial_port, &this->byte, sizeof(this->byte));       
         } catch(const std::exception& e){
             std::cout << e.what() << std::endl;
+            Logger::logWarning("Flight controller couldn't read from port properly?!");
         }
         //std::cout << "port read!!!" << std::endl;
         //std::cout << "byte contents:" << (int) this->byte << std::endl;
@@ -51,11 +46,7 @@ void FlightController::readData(){
                 default:
                     break;
             }
-        } else {
-            //std::cout << "msg not received!!!" << std::endl;
         }
-
-	//printData();
 
     }
 }
@@ -67,14 +58,15 @@ FlightController::FlightController(){
     system("python3 CubeInit.py");
     //std::cout << "opening Serial port!!!" << std::endl;
     // Initialize serial port
-    serial_port = open("/dev/ttyACM1", O_RDWR);
+    serial_port = open(flightControllerSerialPort.c_str(), O_RDWR);
     if (serial_port < 0) {
         std::cout << "Error opening serial p0rt" << std::endl;
+        Logger::logCritical("Error opening serial port " + flightControllerSerialPort + " for flight controller");
+        exit(1);
     } else {
-        //std::cout << "Port opened!" << endl;
+        Logger::logEvent("Serial port " + flightControllerSerialPort + " opened");
     }
         std::thread updateDataThread(&FlightController::readData, this);
-        //updateDataThread.join();
         updateDataThread.detach();
 
 }

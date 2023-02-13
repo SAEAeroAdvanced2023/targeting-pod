@@ -2,6 +2,7 @@
 #include <ctime>
 #include "camera.h"
 #include "frame.h"
+#include "logger.h"
 
 using namespace std;
 using namespace cv;
@@ -9,6 +10,7 @@ using namespace cv;
 // Constructor
 Camera::Camera(){
     this->video = this->initVideo();
+    
 }
 
 // Returns a Frame struct
@@ -29,9 +31,11 @@ VideoCapture Camera::initVideo(){
     vid.open(0); // , cv::CAP_V4L2
     if (vid.isOpened()){
         cout << "Video opened fine" << endl;
+        Logger::logEvent("Camera Initialized Successfully");
         return vid;
     } else {
         cout << "ERROR: Video FAILED >:( >:(" << endl;
+        Logger::logCritical("Camera Initialization failed!!!");
         exit(1);
     }
 }
