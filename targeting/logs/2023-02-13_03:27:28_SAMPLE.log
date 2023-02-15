@@ -1,5 +1,0 @@
-[0.000070] INIT: Logger started :)
-[0.000099] EVENT: Switched to manual mode
-[0.000104] DEBUG: Current Altitude: 61 Feet
-[0.000107] WARNING: Calculated GPS coordinate is very far from current location
-[0.000111] CRITICAL: PA has exploded
