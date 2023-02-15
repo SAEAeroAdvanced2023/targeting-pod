@@ -11,6 +11,11 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <Eigen/Dense>
+
+#include "flightcontroller.h"
+#include "imu.h"
+#include "pointlist.h"
 
 class Logger {
 public:
@@ -19,11 +24,13 @@ public:
     static void logWarning(std::string x);
     static void logCritical(std::string x);
     static void logDebug(std::string x);
+    static void logCSV(GPSPoint gpsPoint, CubeData cubeData, IMUData imuData, int pix_x, int pix_y);
     static void closeLogger();
 private:
     Logger();
     static Logger logger;
     std::ofstream logFile;
+    std::ofstream csvFile;
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 };
 

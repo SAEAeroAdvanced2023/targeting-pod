@@ -1,11 +1,13 @@
 #include <iostream>
+#include <mutex>
 #include "logger.h"
 #include "flightcontroller.h"
 
 using namespace std;
 
+std::mutex flightControllerMutex;
+
 // TODO: Add "this" keyword in front of member variables to make code easier to understand :)
-// TODO: MUTEXES
 
 // Updates the sensor data
 void FlightController::readData(){
@@ -28,19 +30,24 @@ void FlightController::readData(){
                     // Get all fields in payload (into gps_raw_int)
                     mavlink_msg_gps_raw_int_decode(&this->msg, &this->gps_raw_int);
                     //std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
-                    this->data.latitude = this->gps_raw_int.lat;
-                    this->data.longitude = this->gps_raw_int.lon;
-                    this->data.altitude = this->gps_raw_int.alt;
-
+                    if (flightControllerMutex.try_lock()){
+                        this->data.latitude = this->gps_raw_int.lat;
+                        this->data.longitude = this->gps_raw_int.lon;
+                        this->data.altitude = this->gps_raw_int.alt;
+                        flightControllerMutex.unlock();
+                    }
                 }
                     break;
                 case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
                     //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
-                    this->data.roll = this->attitude.roll;
-                    this->data.yaw = this->attitude.yaw;
-                    this->data.pitch = this->attitude.pitch;
+                    if (flightControllerMutex.try_lock()) {
+                        this->data.roll = this->attitude.roll;
+                        this->data.yaw = this->attitude.yaw;
+                        this->data.pitch = this->attitude.pitch;
+                        flightControllerMutex.unlock();
+                    }
                 }
                     break;
                 default:

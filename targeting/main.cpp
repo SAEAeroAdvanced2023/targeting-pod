@@ -7,6 +7,7 @@
 #include <chrono>
 #include <pigpio.h>
 #include <cstring>
+#include <mutex>
 #include <opencv2/videoio.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
@@ -103,12 +104,12 @@ int main(int argc, char** argv){
     ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
     //TODO: Get actual values for these
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -78;
+    v_dist << 0, 0, -100;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
-    double f = 0.00304;
+    double f = 0.304;
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
     
@@ -118,7 +119,6 @@ int main(int argc, char** argv){
     for (int i = 0; i < 100; i++){ // Use this for testing
     //while (true){
     
-        cout << i << ": "; 
         // Just to time each frame (Optional)
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -126,10 +126,16 @@ int main(int argc, char** argv){
         frame = camera.getFrame();
 
         // Get new data from cube
+        flightControllerMutex.lock();
         cubeData = flightController.getData();
+        flightControllerMutex.unlock();
 
         // Get new data from gimbal IMU
+        imuMutex.lock();
         imuData = imu.getSensorData();
+        imuMutex.unlock();
+        //Logger::logDebug();
+        cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl; 
 
         // TODO: Load color from Flight controller (Mavlink message im guessing? Might just go in flightController) 
         // Masking the frames
@@ -160,7 +166,9 @@ int main(int argc, char** argv){
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            pointList.addPoint(transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), 0/*toRad(imuData.roll)*/, 0/*toRad(imuData.yaw)*/, 0/*toRad(imuData.pitch)*/, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp));
+            GPSPoint m = transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp);
+            pointList.addPoint(m);
+            Logger::logCSV(m, cubeData, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
         }
 
         // Move the gimbal
@@ -172,7 +180,7 @@ int main(int argc, char** argv){
         // Print the amount of time the frame took to process (Optional)
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
-        cout << fixed << setprecision(10) << time << endl;
+        cout << i << ": " << fixed << setprecision(10) << time << endl;
         Logger::logDebug("Frame " + std::to_string(i) + " process time: " + std::to_string(time) + "s");
 
         //if ((char)cv::waitKey(10) > 0) break;

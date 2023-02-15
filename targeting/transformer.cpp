@@ -74,7 +74,7 @@ GPSPoint transform(Eigen::MatrixXd v_dist, double roll, double yaw, double pitch
 
     // Rotation and Translation from inertial frame to camera frame
     Eigen::MatrixXd trans_c = transformation_translation(c_dist(0,0), c_dist(0,1), c_dist(0,2));
-    Eigen::MatrixXd rot_g = transformation_rotation(g_yaw, g_roll, g_pitch);
+    Eigen::MatrixXd rot_g = transformation_rotation(g_yaw, g_pitch, g_roll);
     Eigen::MatrixXd trans_g = transformation_translation(g_dist(0,0), g_dist(0,1), g_dist(0,2));
     Eigen::MatrixXd rot_v = transformation_rotation(yaw, pitch, roll);
     Eigen::MatrixXd trans_i = transformation_translation(v_dist(0,0), v_dist(0,1), v_dist(0,2));
@@ -117,7 +117,7 @@ GPSPoint transform_dummy(time_t timestamp){
     int pix_x = 323;
     int pix_y = 233;
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -100;
+    v_dist << 0, 0, -779;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);

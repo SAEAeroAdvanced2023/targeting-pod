@@ -8,15 +8,18 @@
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
+#include <mutex>
 
 #define BUFFER_SIZE 60 // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
 
 const std::string IMUSerialPort = "/dev/ttyACM0";
 
+extern std::mutex imuMutex;
+
 struct IMUData {
-    float pitch = 0;
-    float yaw = 0;
-    float roll = 0;
+    double pitch = 0;
+    double yaw = 0;
+    double roll = 0;
 };
 
 class IMU {

@@ -12,11 +12,14 @@
 #include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <mutex>
 #include <thread>
 
 using namespace std;
 
 const std::string flightControllerSerialPort = "/dev/ttyACM1";
+
+extern std::mutex flightControllerMutex;
 
 //TODO: Define the data
 struct CubeData{

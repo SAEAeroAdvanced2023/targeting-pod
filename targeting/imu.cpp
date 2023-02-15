@@ -10,13 +10,14 @@
 #include <unistd.h>
 #include <chrono>
 #include <thread>
+#include <mutex>
 
 #include "imu.h"
 #include "logger.h"
 
 using namespace std;
 
-// TODO: MUTEXES
+std::mutex imuMutex;
 
 // Updates the sensor data
 void IMU::readSensorData(){
@@ -58,11 +59,18 @@ void IMU::readSensorData(){
         
         // Crazy bitwise concatenation happening here (Little endian style)
         uint16_t uroll = (message[43] << 8) | (message[42]);
-        this->data.roll = uroll / 10.0; // Keep the .0 or cast as float or we lose precision
         uint16_t upitch = (message[45] << 8) | (message[44]);
-        this->data.pitch = upitch / 10.0;
         uint16_t uyaw = (message[47] << 8) | (message[46]);
-        this->data.yaw = uyaw / 10.0;
+        //std::cout << (int16_t) uroll % 3600 / 10.0 << " " << (int16_t) upitch / 10.0 << " " << (int16_t) uyaw / 10.0 << endl;
+        double vroll = (int16_t) uroll % 3600 / 10.0;
+        double vpitch = (int16_t) upitch % 3600 / 10.0;
+        double vyaw = (int16_t) uyaw % 3600 / 10.0;
+        if (imuMutex.try_lock()) {
+            this->data.roll = vroll;
+            this->data.pitch = vpitch;
+            this->data.yaw = vyaw;
+            imuMutex.unlock();
+        }
         //std::cout << "Roll: " << (int16_t) uroll / 10.0 << " Pitch: " << (int16_t) upitch / 10.0 << " Yaw: " << (int16_t) uyaw / 10.0 << std::endl;
         
     }

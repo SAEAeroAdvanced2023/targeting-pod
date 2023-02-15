@@ -10,7 +10,7 @@
 
 int main(){
 
-    volatile int serial_port = open("/dev/ttyACM3", O_RDWR);
+    volatile int serial_port = open("/dev/ttyACM0", O_RDWR);
     if (serial_port < 0) {
         std::cout << "Error opening serial port!!!" << std::endl;
     }
