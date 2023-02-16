@@ -124,25 +124,25 @@ if __name__ == '__main__':
     CCM = np.array([[648.19832304,0.,334.28368528], [0.,646.87336044,263.44824863], [0.,0.,1.]])
 # pixels seen in sensor frame
     pix_x = 334
-    pix_y = 263
+    pix_y = 200
 # vehicule distance from inertial point (GPS coordinates)
-    v_dist = np.array([0, 0, -82])
+    v_dist = np.array([0, 0, -100])
 # coordinates of gimbal wtr to centroid of the aircraft
     g_dist = np.array([0, 0, 0])
 # distance of camera center vision from center of rotation of gimbal
     c_dist = np.array([0,0,0])
 # yaw, pitch, roll = aircraft rotation
     yaw=0
-    pitch=(-np.pi/2)
+    pitch=0
     roll=0
 
 #g_yaw, g_pitch, g_roll = gimbal's rotation
     g_yaw=0
-    g_pitch=np.pi/4
+    g_pitch=-np.pi/5
     g_roll=0
 
 # focal length of camera in meters
-    f = 0.035
+    f = 0.0035
 # ground definition ( point & normal vector)
     gnd = np.array([[1,1,0],[0,0,1]])
 
