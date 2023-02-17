@@ -12,8 +12,6 @@
 
 #define BUFFER_SIZE 60 // Size of the message; not sure how long it is but 60 seems to work fine. Increase this increases processing time but may also reduce invalid checksums
 
-const std::string IMUSerialPort = "/dev/ttyACM0";
-
 extern std::mutex imuMutex;
 
 struct IMUData {
@@ -24,13 +22,14 @@ struct IMUData {
 
 class IMU {
 public:
-    IMU();
+    IMU(std::string port);
     IMUData getSensorData();
     void readSensorData();
 private:
     volatile int imu_port;
     IMUData data;
     uint8_t message[BUFFER_SIZE];
+    const std::string IMUSerialPort;
 };
 
 #endif

@@ -59,8 +59,9 @@ void FlightController::readData(){
 }
 
 // Open serial connection
-FlightController::FlightController(){
-    
+FlightController::FlightController(std::string port){
+
+    this.flightControllerSerialPort = port;
     //Open and close python app.
     system("python3 CubeInit.py");
     //std::cout << "opening Serial port!!!" << std::endl;

@@ -10,11 +10,12 @@ using namespace cv;
 
 class Camera {
 public:
-    Camera();
+    Camera(int port);
     Frame getFrame();
 private:
     VideoCapture initVideo();
     VideoCapture video;
+    int cameraPort
 };
 
 #endif

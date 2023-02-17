@@ -20,6 +20,7 @@ using namespace cv;
 const string BLOB_PARAM_FILE = "blobparams.json";
 const string COLOR_PARAM_FILE = "colorparams.json";
 const string MATH_PARAM_FILE = "mathparams.json";
+const string SYSTEM_PARAM_FILE = "systemparams.json";
 
 // Prints crosshair at a specific coordinate
 void crosshair(int x, int y, Mat frame, int r) {
@@ -33,29 +34,30 @@ void crosshair(int x, int y, Mat frame, int r) {
 
 int main(int argc, char** argv){
 
+    // Load parameters and create detector (Shout out json_struct.h)
+    string blobParams = readFile(BLOB_PARAM_FILE);
+    Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
+    MathParams mathParams = makeMathParams(readFile(MATH_PARAM_FILE));
+    ColorParams colorParams = makeColorParams(readFile(COLOR_PARAM_FILE));
+    SystemParams systemParams = makeSystemParams(readFile(SYSTEM_PARAM_FILE));
+
     // Init gimbal
     Gimbal gimbal();
 
     // Init Camera
-    Camera camera();
+    Camera camera(systemParams.cPort);
 
     // Init Flight Controller
-    FlightController flightController();
+    FlightController flightController(systemParams.fcPort);
 
     // Init IMU
-    IMU imu();
+    IMU imu(systemParams.imuPort);
 
     // Init PointList
     PointList pointList();
 
     // Init Transmitter
     Transmitter transmitter();
-
-    // Load parameters and create detector (Shout out json_struct.h)
-    string blobParams = readFile(BLOB_PARAM_FILE);
-    Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
-    MathParams mathParams = makeMathParams(readFile(MATH_PARAM_FILE));
-    ColorParams colorParams = makeColorParams(readFile(COLOR_PARAM_FILE));
 
     // Misc variables
     string mode = "ready";

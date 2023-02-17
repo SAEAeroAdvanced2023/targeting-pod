@@ -8,7 +8,8 @@ using namespace std;
 using namespace cv;
 
 // Constructor
-Camera::Camera(){
+Camera::Camera(int port){
+    this->cameraPort = port;
     this->video = this->initVideo();
     
 }
@@ -28,7 +29,7 @@ Frame Camera::getFrame(){
 
 VideoCapture Camera::initVideo(){
     VideoCapture vid;
-    vid.open(0); // , cv::CAP_V4L2
+    vid.open(this->cameraPort); // , cv::CAP_V4L2
     if (vid.isOpened()){
         cout << "Video opened fine" << endl;
         Logger::logEvent("Camera Initialized Successfully");

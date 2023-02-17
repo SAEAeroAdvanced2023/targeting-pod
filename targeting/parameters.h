@@ -74,9 +74,9 @@ struct TempMathParams {
 struct SystemParams {
     string imuPort;
     string fcPort;
-    int cameraPort;
+    int cPort;
 
-    JS_OBJ(imuPort, fcPort, cameraPort)
+    JS_OBJ(imuPort, fcPort, cPort)
 
 };
 

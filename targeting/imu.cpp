@@ -77,10 +77,11 @@ void IMU::readSensorData(){
     
 }
 
-IMU::IMU(){
+IMU::IMU(std::string port){
 
+    this->IMUSerialPort = port;
     // Initialize serial port
-    imu_port = open(IMUSerialPort.c_str() ,O_RDWR);
+    this->imu_port = open(IMUSerialPort.c_str() ,O_RDWR);
     if (imu_port < 0){
         cout << "Error opening IMU serial port!!!" << endl;
         Logger::logCritical("Could not open IMU serial port " + IMUSerialPort);

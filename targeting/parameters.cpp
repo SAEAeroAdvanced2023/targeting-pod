@@ -59,6 +59,20 @@ ColorParams makeColorParams(string input) {
     return colorParams;
 }
 
+// Creates SystemParams struct from json input (Shout out json_struct.h)
+SystemParams makeSystemParams(string input) {
+    SystemParams systemParams;
+    JS::ParseContext parseContext(input);
+    if (parseContext.parseTo(systemParams) != JS::Error::NoError) {
+        std::string errorStr = parseContext.makeErrorString();
+        fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
+        Logger::logCritical("Could not parse color parameters");
+        exit(1);
+    }
+    Logger::logEvent("Parameters parsed for system config");
+    return systemParams;
+}
+
 // Creates MathParams struct from json input (Shout out json_struct.h)
 MathParams makeMathParams(string input) {
     TempMathParams tempMathParams;
@@ -70,7 +84,7 @@ MathParams makeMathParams(string input) {
         Logger::logCritical("Could not parse math parameters");
         exit(1);
     }
-    Logger::logEvent("Parameters parsed for math detection");
+    Logger::logEvent("Parameters parsed for math config");
 
     mathParams.ccm << TempMathParams.ccm; //3x3 Camera Calibration Matrix
     mathParams.ccmInv << TempMathParams.ccmInv; //4x4 inv Camera Calibration Matrix

@@ -17,7 +17,7 @@
 
 using namespace std;
 
-const std::string flightControllerSerialPort = "/dev/ttyACM1";
+
 
 extern std::mutex flightControllerMutex;
 
@@ -34,7 +34,7 @@ struct CubeData{
 
 class FlightController{
 public:
-    FlightController();
+    FlightController(std::string port);
     void readData();
     void sendData();
     void printData();
@@ -47,6 +47,7 @@ private:
     mavlink_gps_raw_int_t gps_raw_int;
     uint8_t byte;
     int serial_port;
+    std::string flightControllerSerialPort;
 };
 
 #endif
