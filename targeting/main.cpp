@@ -166,7 +166,7 @@ int main(int argc, char** argv){
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            GPSPoint m = transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp);
+            GPSPoint m = transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll) - CubeData.roll + FlightController.getInitData().roll, toRad(imuData.yaw) - CubeData.yaw + FlightController.getInitData().yaw, toRad(imuData.pitch) - CubeData.pitch + FlightController.getInitData().pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp);
             pointList.addPoint(m);
             Logger::logCSV(m, cubeData, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
         }

@@ -41,6 +41,7 @@ public:
     CubeData getData();
 private:
     CubeData data;
+    CubeData initData;
     mavlink_status_t status;
     mavlink_message_t msg;
     mavlink_attitude_t attitude;

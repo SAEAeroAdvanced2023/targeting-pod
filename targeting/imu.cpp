@@ -99,3 +99,8 @@ IMUData IMU::getSensorData(){
     return this->data;
 }
 
+// Returns Sensor data
+IMUData IMU::getInitSensorData(){
+    return this->initData;
+}
+

@@ -14,6 +14,9 @@ void FlightController::readData(){
     
     Logger::logEvent("Starting Flight controller loop");
     
+    bool inita = false;
+    bool initb = false;
+    
     while(this->serial_port > 0) {
         try {
             read(this->serial_port, &this->byte, sizeof(this->byte));       
@@ -30,6 +33,12 @@ void FlightController::readData(){
                     // Get all fields in payload (into gps_raw_int)
                     mavlink_msg_gps_raw_int_decode(&this->msg, &this->gps_raw_int);
                     //std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
+                    if (!init) {
+                        this->intData.latitude = this->gps_raw_int.lat;
+                        this->intData.longitude = this->gps_raw_int.lon;
+                        this->intData.altitude = this->gps_raw_int.alt;
+                        inita = true;
+                    }
                     if (flightControllerMutex.try_lock()){
                         this->data.latitude = this->gps_raw_int.lat;
                         this->data.longitude = this->gps_raw_int.lon;
@@ -42,6 +51,12 @@ void FlightController::readData(){
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
                     //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
+                    if (!init) {
+                        this->data.roll = this->attitude.roll;
+                        this->data.yaw = this->attitude.yaw;
+                        this->data.pitch = this->attitude.pitch;
+                        initb = true;
+                    }
                     if (flightControllerMutex.try_lock()) {
                         this->data.roll = this->attitude.roll;
                         this->data.yaw = this->attitude.yaw;
@@ -85,6 +100,10 @@ void FlightController::sendData(){
 
 CubeData FlightController::getData(){
     return this->data;
+}
+
+CubeData FlightController::getInitData(){
+    return this->initData;
 }
 
 void FlightController::printData(){

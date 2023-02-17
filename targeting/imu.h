@@ -30,6 +30,7 @@ public:
 private:
     volatile int imu_port;
     IMUData data;
+    IMUData initData;
     uint8_t message[BUFFER_SIZE];
 };
 
