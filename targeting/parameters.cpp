@@ -3,8 +3,11 @@
 #include <iomanip>
 #include "parameters.h"
 #include "json_struct.h"
+#include "logger.h"
 
 using namespace std;
+
+// TODO: Load in camera calibration matrix from file and keep the calibration as a Python script that writes to file
 
 // Loads file into string
 string readFile(string file){
@@ -25,7 +28,8 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     if (parseContext.parseTo(blobParams) != JS::Error::NoError) {
         std::string errorStr = parseContext.makeErrorString();
         fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
-        return nullptr;
+        Logger::logCritical("Could not parse parameters for blob detection");
+        exit(1);
     }
     SimpleBlobDetector::Params params;
     params.minThreshold = blobParams.minThreshold;
@@ -42,6 +46,7 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     params.filterByColor = blobParams.filterByColor;
     params.blobColor = blobParams.blobColor;
     Ptr <SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+    Logger::logEvent("Parameters parsed for blob detector");
     return detector;
 }
 

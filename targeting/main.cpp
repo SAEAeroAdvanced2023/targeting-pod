@@ -1,13 +1,29 @@
+// Compile with: g++ *.cpp -lopencv_core -lopencv_videoio -lopencv_features2d -lopencv_highgui -lopencv_imgproc -lpthread -lpigpio
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <chrono>
 #include <pigpio.h>
+#include <cstring>
+#include <mutex>
 #include <opencv2/videoio.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <Eigen/Dense>
+
+#include "camera.h"
+#include "flightcontroller.h"
+#include "frame.h"
+#include "gimbal.h"
+#include "imu.h"
+#include "parameters.h"
+#include "pointlist.h"
+#include "transformer.h"
+#include "logger.h"
+
 #include "json_struct.h"
 
 // TODO: Make a general config for other things like camera index or servos enabled or not
@@ -32,6 +48,24 @@ void crosshair(int x, int y, Mat frame, int r) {
     line(frame, Point(x, y + r), Point(x ,y + r/2), Scalar(0,0,255), 1);
 }
 
+/*int main(int argc, char *argv[]){
+    Camera camera;
+    Frame frame;
+    int i = 0;
+    while (true){
+        frame = camera.getFrame();
+        if(!frame.image.empty()){
+            i++;
+            cout << "W #" << i << endl;
+            imshow("Preprocessed", frame.image);
+        } else {
+            i++;
+            cout << "L #" << i << endl;
+        }
+        cv::waitKey(30);
+    }
+}*/
+
 int main(int argc, char** argv){
 
     // Load parameters and create detector (Shout out json_struct.h)
@@ -42,7 +76,7 @@ int main(int argc, char** argv){
     SystemParams systemParams = makeSystemParams(readFile(SYSTEM_PARAM_FILE));
 
     // Init gimbal
-    Gimbal gimbal();
+    //Gimbal gimbal();
 
     // Init Camera
     Camera camera(systemParams.cPort);
@@ -56,14 +90,11 @@ int main(int argc, char** argv){
     // Init PointList
     PointList pointList();
 
-    // Init Transmitter
-    Transmitter transmitter();
-
     // Misc variables
-    string mode = "ready";
+    cv::namedWindow("Display", CV_WINDOW_AUTOSIZE);
+    string mode = "auto";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
-
     Frame frame;
     IMUData imuData;
     CubeData cubeData;
@@ -89,7 +120,8 @@ int main(int argc, char** argv){
     Logger::logEvent("Tracking loop started");
 
     // Main Loop
-    while (true){
+    for (int i = 0; i < 100; i++){ // Use this for testing
+    //while (true){
 
         // Just to time each frame (Optional)
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -98,10 +130,16 @@ int main(int argc, char** argv){
         camera.getFrame();
 
         // Get new data from data 
-        flightController.readData();
+        flightControllerMutex.lock();
+        cubeData = flightController.getData();
+        flightControllerMutex.unlock();
 
         // Get new data from gimbal IMU
-        imu.getSensorData();
+        imuMutex.lock();
+        imuData = imu.getSensorData();
+        imuMutex.unlock();
+        //Logger::logDebug();
+        cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl;
 
         // Masking the frames using Json config file
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
@@ -121,23 +159,17 @@ int main(int argc, char** argv){
             line(frame, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
         }
 
-        circle(frame, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
+        crosshair(mask.cols/2, mask.rows/2, frame.image, 40);
+        //circle(frame, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
 
-        // Transmit video frame (With the points on plz)
-        transmitter.transmitVideo();
+        // Display frames on screen
+        imshow("Display", frame.image);
+        imshow("Masked", mask);
 
-        // Display frames on screen (optional)
-        // imshow("Preprocessed", frame);
-        // imshow("Masked", mask);
-
-        // Check flight controller data to see if mode changed
-        // IDK
+        // Check flight controller data to see if mode changed (Unnecessary?)
+        //mode = flightController.getData().mode;
 
         // Calculate the point and store it
-        // pointList.addPoint(calculatePoint());
-
-        // Check flight controller to see if Auto or Manual
-        // IDK
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
             GPSPoint m = transform(mathParams.v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), mathParams.ccm, mathParams.ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, mathParams.g_dist, mathParams.c_dist, mathParams.f, mathParams.gnd, frame.timestamp);
@@ -146,18 +178,29 @@ int main(int argc, char** argv){
         }
 
         // Move the gimbal
-        gimbal.trackPoint(keypoints);
+        if (mode == "ready" || mode == "auto"){
+            //gimbal.trackPoint(keypoints, mask); // Pitch Roll config
+            //gimbal.trackPointPolar(keypoints, mask); // Pitch Yaw config
+        }
 
-        // Print the amount of thime the frame took to process (Optional)
+        // Print the amount of time the frame took to process (Optional)
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
-        cout << fixed << setprecision(10) << time << endl;
+        cout << i << ": " << fixed << setprecision(10) << time << endl;
+        Logger::logDebug("Frame " + std::to_string(i) + " process time: " + std::to_string(time) + "s");
 
-        if ((char)cv::waitKey(10) > 0) break;
+        //if ((char)cv::waitKey(10) > 0) break;
+        cv::waitKey(30);
 
     }
 
-    gpioTerminate();
+        // Just for testing rn
+    Eigen::MatrixXd m = pointList.calculateAverage();
+    cout << m << endl;
+    Logger::logEvent("Calculated point: " + vec2string(m));
+    //gpioTerminate();
+
+    Logger::closeLogger();
 
     return 0;
 
