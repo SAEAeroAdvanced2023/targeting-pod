@@ -15,7 +15,7 @@ public:
 private:
     VideoCapture initVideo();
     VideoCapture video;
-    int cameraPort
+    int cameraPort;
 };
 
 #endif
