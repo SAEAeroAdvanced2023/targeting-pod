@@ -18,6 +18,8 @@ using namespace std;
 using namespace cv;
 
 const string BLOB_PARAM_FILE = "blobparams.json";
+const string COLOR_PARAM_FILE = "colorparams.json";
+const string MATH_PARAM_FILE = "mathparams.json";
 
 // Prints crosshair at a specific coordinate
 void crosshair(int x, int y, Mat frame, int r) {
@@ -52,11 +54,37 @@ int main(int argc, char** argv){
     // Load parameters and create detector (Shout out json_struct.h)
     string blobParams = readFile(BLOB_PARAM_FILE);
     Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
+    MathParams mathParams = makeMathParams(readFile(MATH_PARAM_FILE));
+    ColorParams colorParams = makeColorParams(readFile(COLOR_PARAM_FILE));
 
     // Misc variables
     string mode = "ready";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
+
+    Frame frame;
+    IMUData imuData;
+    CubeData cubeData;
+    
+    // Tracking variables
+//    // TODO: Load from file, camera calibration tool should write matrix to file
+//    Eigen::MatrixXd ccm_inv(4,4);
+//    ccm_inv << 0.00204358, 0, -0.66121428, 0, 0, 0.00204224, -0.47667228, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+//    Eigen::MatrixXd ccm(3,3);
+//    ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
+//    //TODO: Get actual values for these
+//    Eigen::MatrixXd v_dist(1,3);
+//    v_dist << 0, 0, -100;
+//    Eigen::MatrixXd g_dist(1,3);
+//    g_dist << 0, 0, 0;
+//    Eigen::MatrixXd c_dist(1,3);
+//    c_dist << 0, 0, 0;
+//    double f = 0.304;
+//    Eigen::MatrixXd gnd(2,3);
+//    gnd << 1, 1, 0, 0, 0, 1;
+
+    
+    Logger::logEvent("Tracking loop started");
 
     // Main Loop
     while (true){
@@ -73,13 +101,16 @@ int main(int argc, char** argv){
         // Get new data from gimbal IMU
         imu.getSensorData();
 
-        // Masking the frames
-        cvtColor(camera.video, hsv ,COLOR_BGR2HSV);
-        inRange(hsv, Scalar(0, 150, 150), Scalar(10, 255, 255), mask1);
-        inRange(hsv, Scalar(170, 150, 150), Scalar(180, 255, 255), mask2);
-        mask = mask1 | mask2; // bitwise or instead of addition!!!
-
-        // Dectecting the blobd and drawing on the frame
+        // Masking the frames using Json config file
+        cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
+        if (colorParams.minHue>colorParams.maxHue){
+            inRange(hsv, Scalar(0, colorParams.minScalar, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxScalar, colorParams.maxValue), mask1);
+            inRange(hsv, Scalar(colorParams.minHue, colorParams.minScalar, colorParams.minValue), Scalar(179, colorParams.maxScalar, colorParams.maxValue), mask2);
+            mask = mask1 | mask2; // Bitwise OR instead of addition!!!
+        } else{
+            inRange(hsv, Scalar(colorParams.minHue, colorParams.minScalar, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxScalar, colorParams.maxValue), mask);
+        }
+        // Detecting the blob and drawing on the frame
         detector->detect(mask, keypoints);
         drawKeypoints(mask,keypoints,mask);
 
@@ -105,6 +136,12 @@ int main(int argc, char** argv){
 
         // Check flight controller to see if Auto or Manual
         // IDK
+        if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
+            //pointList.addPoint(transform_dummy(frame.timestamp));
+            GPSPoint m = transform(mathParams.v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), mathParams.ccm, mathParams.ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, mathParams.g_dist, mathParams.c_dist, mathParams.f, mathParams.gnd, frame.timestamp);
+            pointList.addPoint(m);
+            Logger::logCSV(m, cubeData, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
+        }
 
         // Move the gimbal
         gimbal.trackPoint(keypoints);

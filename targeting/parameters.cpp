@@ -44,3 +44,40 @@ Ptr<SimpleBlobDetector> makeBlobParams(string input) {
     Ptr <SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
     return detector;
 }
+
+// Creates ColorParams struct from json input (Shout out json_struct.h)
+ColorParams makeColorParams(string input) {
+    ColorParams colorParams;
+    JS::ParseContext parseContext(input);
+    if (parseContext.parseTo(colorParams) != JS::Error::NoError) {
+        std::string errorStr = parseContext.makeErrorString();
+        fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
+        Logger::logCritical("Could not parse color parameters");
+        exit(1);
+    }
+    Logger::logEvent("Parameters parsed for color detection");
+    return colorParams;
+}
+
+// Creates MathParams struct from json input (Shout out json_struct.h)
+MathParams makeMathParams(string input) {
+    TempMathParams tempMathParams;
+    MathParams mathParams;
+    JS::ParseContext parseContext(input);
+    if (parseContext.parseTo(tempMathParams) != JS::Error::NoError) {
+        std::string errorStr = parseContext.makeErrorString();
+        fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
+        Logger::logCritical("Could not parse math parameters");
+        exit(1);
+    }
+    Logger::logEvent("Parameters parsed for math detection");
+
+    mathParams.ccm << TempMathParams.ccm; //3x3 Camera Calibration Matrix
+    mathParams.ccmInv << TempMathParams.ccmInv; //4x4 inv Camera Calibration Matrix
+    mathParams.vDist << TempMathParams.vDist; //1x3 vehicle Distance from the origin
+    mathParams.gDist << TempMathParams.gDist; //1x3 gimbal distance from the vehicle
+    mathParams.cDist << TempMathParams.cDist; //1x3 camera distance from the gimbal
+    mathParams.gnd << TempMathParams.gnd; ; //2x3 Ground reference plane
+
+    return mathParams;
+}
