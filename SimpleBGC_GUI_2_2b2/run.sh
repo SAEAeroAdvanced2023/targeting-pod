@@ -1,1 +1,1 @@
-javaw -Djava.library.path=./lib -jar SimpleBGC_GUI.jar
+java -Djava.library.path=./lib -jar SimpleBGC_GUI.jar

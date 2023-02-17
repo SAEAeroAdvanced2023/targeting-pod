@@ -3,13 +3,15 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <Eigen/Dense>
 
 using namespace std;
 
-// TODO: IDK what the point should be tbh
+// TODO: Add another field for certainty value for averaging
 struct GPSPoint {
-    double x;
-    double y;
+    Eigen::MatrixXd point;
+    time_t timestamp;
 };
 
 class PointList {
@@ -18,6 +20,7 @@ public:
     void addPoint(GPSPoint p);
     vector<GPSPoint> getPointList();
     void clearList();
+    Eigen::MatrixXd calculateAverage();
 private:
     vector<GPSPoint> pointList;
 };

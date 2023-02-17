@@ -2,7 +2,7 @@
   "minThreshold":10,
   "maxThreshold":200,
   "filterByArea":true,
-  "minArea":5000,
+  "minArea":25,
   "maxArea":1000000000,
   "filterByCircularity":false,
   "minCircularity":0.5,
