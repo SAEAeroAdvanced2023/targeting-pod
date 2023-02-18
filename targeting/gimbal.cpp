@@ -12,6 +12,10 @@ double toRad(double x){
     return x * M_PI/180;
 }
 
+double toDeg(double x){
+    return x / (M_PI/180);
+}
+
 Gimbal::Gimbal(){
     initServos();
 }

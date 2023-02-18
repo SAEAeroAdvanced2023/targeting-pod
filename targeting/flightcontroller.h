@@ -39,6 +39,7 @@ public:
     void sendData();
     void printData();
     CubeData getData();
+    CubeData getInitData();
 private:
     CubeData data;
     CubeData initData;

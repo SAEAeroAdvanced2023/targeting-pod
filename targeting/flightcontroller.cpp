@@ -33,10 +33,10 @@ void FlightController::readData(){
                     // Get all fields in payload (into gps_raw_int)
                     mavlink_msg_gps_raw_int_decode(&this->msg, &this->gps_raw_int);
                     //std::cout <<"Lat: " << this->gps_raw_int.lat << ", lon: " << this->gps_raw_int.lon << ", alt: " << this->gps_raw_int.alt << std::endl;
-                    if (!init) {
-                        this->intData.latitude = this->gps_raw_int.lat;
-                        this->intData.longitude = this->gps_raw_int.lon;
-                        this->intData.altitude = this->gps_raw_int.alt;
+                    if (!inita) {
+                        this->initData.latitude = this->gps_raw_int.lat;
+                        this->initData.longitude = this->gps_raw_int.lon;
+                        this->initData.altitude = this->gps_raw_int.alt;
                         inita = true;
                     }
                     if (flightControllerMutex.try_lock()){
@@ -51,16 +51,16 @@ void FlightController::readData(){
                     // Get all fields in payload (into attitude)
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
                     //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
-                    if (!init) {
-                        this->data.roll = this->attitude.roll;
-                        this->data.yaw = this->attitude.yaw;
-                        this->data.pitch = this->attitude.pitch;
+                    if (!initb) {
+                        this->initData.roll = 0;//this->attitude.roll;
+                        this->initData.yaw = 0;//this->attitude.yaw;
+                        this->initData.pitch = 0;//this->attitude.pitch;
                         initb = true;
                     }
                     if (flightControllerMutex.try_lock()) {
-                        this->data.roll = this->attitude.roll;
-                        this->data.yaw = this->attitude.yaw;
-                        this->data.pitch = this->attitude.pitch;
+                        this->data.roll = 0;//this->attitude.roll;
+                        this->data.yaw = 0;//this->attitude.yaw;
+                        this->data.pitch = 0;//this->attitude.pitch;
                         flightControllerMutex.unlock();
                     }
                 }

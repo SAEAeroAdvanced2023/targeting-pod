@@ -103,12 +103,20 @@ int main(int argc, char** argv){
     Eigen::MatrixXd ccm(3,3);
     ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
     //TODO: Get actual values for these
+    /* Dummy values
     Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -100;
+    v_dist << 0, 0, -0.805;
     Eigen::MatrixXd g_dist(1,3);
     g_dist << 0, 0, 0;
     Eigen::MatrixXd c_dist(1,3);
     c_dist << 0, 0, 0;
+    */
+    Eigen::MatrixXd v_dist(1,3);
+    v_dist << 0, 0, -1.79;
+    Eigen::MatrixXd g_dist(1,3);
+    g_dist << 0.058, 0, -0.087;
+    Eigen::MatrixXd c_dist(1,3);
+    c_dist << 0.020, -0.014, 0;
     double f = 0.304;
     Eigen::MatrixXd gnd(2,3);
     gnd << 1, 1, 0, 0, 0, 1;
@@ -135,7 +143,13 @@ int main(int argc, char** argv){
         imuData = imu.getSensorData();
         imuMutex.unlock();
         //Logger::logDebug();
-        cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl; 
+        //cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl; 
+        cout << "Pitch v: " << toDeg(cubeData.pitch - flightController.getInitData().pitch) 
+            << " Roll v: " << toDeg(cubeData.roll - flightController.getInitData().roll) 
+            << " Yaw v: " << toDeg(cubeData.yaw - flightController.getInitData().yaw) << endl;
+        cout << "Pitch g: " << imuData.pitch - toDeg(cubeData.pitch - flightController.getInitData().pitch) 
+            << " Roll g: " << imuData.roll - toDeg(cubeData.roll - flightController.getInitData().roll)  
+            << " Yaw g: " << imuData.yaw - toDeg(cubeData.yaw - flightController.getInitData().yaw)  << endl; 
 
         // TODO: Load color from Flight controller (Mavlink message im guessing? Might just go in flightController) 
         // Masking the frames
@@ -166,9 +180,9 @@ int main(int argc, char** argv){
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            GPSPoint m = transform(v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll) - CubeData.roll + FlightController.getInitData().roll, toRad(imuData.yaw) - CubeData.yaw + FlightController.getInitData().yaw, toRad(imuData.pitch) - CubeData.pitch + FlightController.getInitData().pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp);
+            GPSPoint m = transform(v_dist, cubeData.roll - flightController.getInitData().roll, cubeData.yaw - flightController.getInitData().yaw, cubeData.pitch - flightController.getInitData().pitch, toRad(imuData.roll) - cubeData.roll + flightController.getInitData().roll, toRad(imuData.yaw) - cubeData.yaw + flightController.getInitData().yaw, toRad(imuData.pitch) - cubeData.pitch + flightController.getInitData().pitch, ccm, ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, g_dist, c_dist, f, gnd, frame.timestamp);
             pointList.addPoint(m);
-            Logger::logCSV(m, cubeData, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
+            Logger::logCSV(m, cubeData, flightController, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
         }
 
         // Move the gimbal

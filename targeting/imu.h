@@ -26,6 +26,7 @@ class IMU {
 public:
     IMU();
     IMUData getSensorData();
+    IMUData getInitSensorData();
     void readSensorData();
 private:
     volatile int imu_port;
