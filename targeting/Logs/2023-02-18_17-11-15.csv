@@ -1,0 +1,3 @@
+Timestamp,Latitude,Longitude,Altitude,Plane Roll,Plane Pitch,Plane Yaw,Gimbal Roll,Gimbal Pitch,Gimbal Yaw,Gimbal Delta Roll,Gimbal Delta Pitch,Gimbal Delta Yaw,X in frame,Y in frame,Estimated X,Estimated Y,Estimated Z
+14387494,0,0,0,0,0,0,-0.0226893,-0.479966,-0.352557,-0.0226893,-0.479966,-0.352557,636,228,4.75776,1.25974,0
+32565544,0,0,0,0,0,0,-0.0122173,-0.657989,-0.0837758,-0.0122173,-0.657989,-0.0837758,492,70,5.84133,1.4475,0
