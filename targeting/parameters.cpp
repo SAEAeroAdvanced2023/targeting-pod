@@ -91,12 +91,50 @@ MathParams makeMathParams(string input) {
     }
     Logger::logEvent("Parameters parsed for math config");
 
-    mathParams.ccm << TempMathParams.ccm; //3x3 Camera Calibration Matrix
-    mathParams.ccmInv << TempMathParams.ccmInv; //4x4 inv Camera Calibration Matrix
-    mathParams.vDist << TempMathParams.vDist; //1x3 vehicle Distance from the origin
-    mathParams.gDist << TempMathParams.gDist; //1x3 gimbal distance from the vehicle
-    mathParams.cDist << TempMathParams.cDist; //1x3 camera distance from the gimbal
-    mathParams.gnd << TempMathParams.gnd; ; //2x3 Ground reference plane
+    Eigen::MatrixXd ccm(3,3);
+    Eigen::MatrixXd ccmInv(4,4);
+    Eigen::MatrixXd vDist(1,3);
+    Eigen::MatrixXd gDist(1,3);
+    Eigen::MatrixXd cDist(1,3);
+    Eigen::MatrixXd gnd(2,3);
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            ccm(i,j) = tempMathParams.ccm[i*3 + j];
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            ccmInv(i,j) = tempMathParams.ccmInv[i*4 + j];
+        }
+    }
+    for (int i = 0; i < 1; i++) {
+        for (int j = 0; j < 3; j++) {
+            vDist(i,j) = tempMathParams.vDist[i*1 + j];
+        }
+    }
+    for (int i = 0; i < 1; i++) {
+        for (int j = 0; j < 3; j++) {
+            gDist(i,j) = tempMathParams.gDist[i*1 + j];
+        }
+    }
+    for (int i = 0; i < 1; i++) {
+        for (int j = 0; j < 3; j++) {
+            cDist(i,j) = tempMathParams.cDist[i*1 + j];
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 3; j++) {
+            gnd(i,j) = tempMathParams.gnd[i*2 + j];
+        }
+    }
+    
+    mathParams.ccm = ccm; //3x3 Camera Calibration Matrix
+    mathParams.ccmInv = ccmInv; //4x4 inv Camera Calibration Matrix
+    mathParams.vDist = vDist; //1x3 vehicle Distance from the origin
+    mathParams.gDist = gDist; //1x3 gimbal distance from the vehicle
+    mathParams.cDist = cDist; //1x3 camera distance from the gimbal
+    mathParams.gnd = gnd; ; //2x3 Ground reference plane
 
     return mathParams;
 }

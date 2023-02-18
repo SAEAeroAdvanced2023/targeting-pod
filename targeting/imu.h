@@ -29,7 +29,7 @@ private:
     volatile int imu_port;
     IMUData data;
     uint8_t message[BUFFER_SIZE];
-    const std::string IMUSerialPort;
+    std::string IMUSerialPort;
 };
 
 #endif

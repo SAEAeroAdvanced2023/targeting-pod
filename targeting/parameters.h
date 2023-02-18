@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <Eigen/Dense>
 #include <opencv2/videoio.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
@@ -46,12 +47,12 @@ struct ColorParams {
 // Vehicle config params
 struct MathParams {
     double f; //camera Focal Length
-    Eigen::MatrixXd ccm(3,3); //3x3 Camera Calibration Matrix
-    Eigen::MatrixXd ccmInv(4,4); //4x4 inv Camera Calibration Matrix
-    Eigen::MatrixXd vDist(1,3); //1x3 vehicle Distance from the origin
-    Eigen::MatrixXd gDist(1,3); //1x3 gimbal distance from the vehicle
-    Eigen::MatrixXd cDist(1,3); //1x3 camera distance from the gimbal
-    Eigen::MatrixXd gnd(2,3); //2x3 Ground reference plane
+    Eigen::MatrixXd ccm; //3x3 Camera Calibration Matrix
+    Eigen::MatrixXd ccmInv; //4x4 inv Camera Calibration Matrix
+    Eigen::MatrixXd vDist; //1x3 vehicle Distance from the origin
+    Eigen::MatrixXd gDist; //1x3 gimbal distance from the vehicle
+    Eigen::MatrixXd cDist; //1x3 camera distance from the gimbal
+    Eigen::MatrixXd gnd; //2x3 Ground reference plane
 };
 
 // Vehicle config params
@@ -84,5 +85,6 @@ string readFile(string file);
 Ptr<SimpleBlobDetector> makeBlobParams(string input);
 ColorParams makeColorParams(string input);
 MathParams makeMathParams(string input);
+SystemParams makeSystemParams(string input);
 
 #endif

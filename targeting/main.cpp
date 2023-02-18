@@ -69,8 +69,7 @@ void crosshair(int x, int y, Mat frame, int r) {
 int main(int argc, char** argv){
 
     // Load parameters and create detector (Shout out json_struct.h)
-    string blobParams = readFile(BLOB_PARAM_FILE);
-    Ptr<SimpleBlobDetector> detector = makeBlobParams(paramText);
+    Ptr<SimpleBlobDetector> detector = makeBlobParams(readFile(BLOB_PARAM_FILE));
     MathParams mathParams = makeMathParams(readFile(MATH_PARAM_FILE));
     ColorParams colorParams = makeColorParams(readFile(COLOR_PARAM_FILE));
     SystemParams systemParams = makeSystemParams(readFile(SYSTEM_PARAM_FILE));
@@ -88,7 +87,7 @@ int main(int argc, char** argv){
     IMU imu(systemParams.imuPort);
 
     // Init PointList
-    PointList pointList();
+    PointList pointList;
 
     // Misc variables
     cv::namedWindow("Display", CV_WINDOW_AUTOSIZE);
@@ -127,7 +126,7 @@ int main(int argc, char** argv){
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
         // Get new frame
-        camera.getFrame();
+        frame = camera.getFrame();
 
         // Get new data from data 
         flightControllerMutex.lock();
@@ -143,20 +142,23 @@ int main(int argc, char** argv){
 
         // Masking the frames using Json config file
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
+        std::cout << "sdfasdfa" << std::endl;
         if (colorParams.minHue>colorParams.maxHue){
-            inRange(hsv, Scalar(0, colorParams.minScalar, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxScalar, colorParams.maxValue), mask1);
-            inRange(hsv, Scalar(colorParams.minHue, colorParams.minScalar, colorParams.minValue), Scalar(179, colorParams.maxScalar, colorParams.maxValue), mask2);
+            inRange(hsv, Scalar(0, colorParams.minSaturation, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxSaturation, colorParams.maxValue), mask1);
+            inRange(hsv, Scalar(colorParams.minHue, colorParams.minSaturation, colorParams.minValue), Scalar(179, colorParams.maxSaturation, colorParams.maxValue), mask2);
             mask = mask1 | mask2; // Bitwise OR instead of addition!!!
         } else{
-            inRange(hsv, Scalar(colorParams.minHue, colorParams.minScalar, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxScalar, colorParams.maxValue), mask);
+            std::cout << "Dsfasdfa" << std::endl;
+            inRange(hsv, Scalar(colorParams.minHue, colorParams.minSaturation, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxSaturation, colorParams.maxValue), mask);
         }
+        
         // Detecting the blob and drawing on the frame
         detector->detect(mask, keypoints);
         drawKeypoints(mask,keypoints,mask);
 
         for (int i = 0; i < keypoints.size(); i++){
-            crosshair(keypoints[i].pt.x, keypoints[i].pt.y, frame, 20);
-            line(frame, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
+            crosshair(keypoints[i].pt.x, keypoints[i].pt.y, frame.image, 20);
+            line(frame.image, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
         }
 
         crosshair(mask.cols/2, mask.rows/2, frame.image, 40);
@@ -172,7 +174,7 @@ int main(int argc, char** argv){
         // Calculate the point and store it
         if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
             //pointList.addPoint(transform_dummy(frame.timestamp));
-            GPSPoint m = transform(mathParams.v_dist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), mathParams.ccm, mathParams.ccm_inv, keypoints[0].pt.x, keypoints[0].pt.y, mathParams.g_dist, mathParams.c_dist, mathParams.f, mathParams.gnd, frame.timestamp);
+            GPSPoint m = transform(mathParams.vDist, 0/*cubeData.roll*/, 0/*cubeData.yaw*/, 0/*cubeData.pitch*/-(M_PI/2), toRad(imuData.roll), toRad(imuData.yaw), toRad(imuData.pitch), mathParams.ccm, mathParams.ccmInv, keypoints[0].pt.x, keypoints[0].pt.y, mathParams.gDist, mathParams.cDist, mathParams.f, mathParams.gnd, frame.timestamp);
             pointList.addPoint(m);
             Logger::logCSV(m, cubeData, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
         }
