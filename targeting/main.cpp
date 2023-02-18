@@ -33,10 +33,10 @@
 using namespace std;
 using namespace cv;
 
-const string BLOB_PARAM_FILE = "blobparams.json";
-const string COLOR_PARAM_FILE = "colorparams.json";
-const string MATH_PARAM_FILE = "mathparams.json";
-const string SYSTEM_PARAM_FILE = "systemparams.json";
+const string BLOB_PARAM_FILE = "configs/blobparams.json";
+const string COLOR_PARAM_FILE = "configs/colorparams.json";
+const string MATH_PARAM_FILE = "configs/mathparams.json";
+const string SYSTEM_PARAM_FILE = "configs/systemparams.json";
 
 // Prints crosshair at a specific coordinate
 void crosshair(int x, int y, Mat frame, int r) {
