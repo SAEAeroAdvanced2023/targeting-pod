@@ -1,3 +1,7 @@
 *.out
+.idea/*
 .idea/
+.idea
+.idea\
+.idea\*
 .fleet/
