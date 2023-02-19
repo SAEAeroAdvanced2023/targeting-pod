@@ -24,7 +24,7 @@ public:
     static void logWarning(std::string x);
     static void logCritical(std::string x);
     static void logDebug(std::string x);
-    static void logCSV(GPSPoint gpsPoint, CubeData cubeData, IMUData imuData, int pix_x, int pix_y);
+    static void logCSV(GPSPoint gpsPoint, CubeData cubeData, FlightController flightController, IMUData imuData, int pix_x, int pix_y);
     static void closeLogger();
 private:
     Logger();

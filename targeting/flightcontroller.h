@@ -39,8 +39,10 @@ public:
     void sendData();
     void printData();
     CubeData getData();
+    CubeData getInitData();
 private:
     CubeData data;
+    CubeData initData;
     mavlink_status_t status;
     mavlink_message_t msg;
     mavlink_attitude_t attitude;

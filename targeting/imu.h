@@ -24,10 +24,12 @@ class IMU {
 public:
     IMU(std::string port);
     IMUData getSensorData();
+    IMUData getInitSensorData();
     void readSensorData();
 private:
     volatile int imu_port;
     IMUData data;
+    IMUData initData;
     uint8_t message[BUFFER_SIZE];
     std::string IMUSerialPort;
 };

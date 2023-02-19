@@ -65,6 +65,8 @@ void IMU::readSensorData(){
         double vroll = (int16_t) uroll % 3600 / 10.0;
         double vpitch = (int16_t) upitch % 3600 / 10.0;
         double vyaw = (int16_t) uyaw % 3600 / 10.0;
+        vroll = vroll * (-1);
+        vpitch = vpitch - 90;
         if (imuMutex.try_lock()) {
             this->data.roll = vroll;
             this->data.pitch = vpitch;
@@ -98,5 +100,10 @@ IMU::IMU(std::string port){
 // Returns Sensor data
 IMUData IMU::getSensorData(){
     return this->data;
+}
+
+// Returns Sensor data
+IMUData IMU::getInitSensorData(){
+    return this->initData;
 }
 

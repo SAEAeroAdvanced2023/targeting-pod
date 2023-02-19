@@ -16,6 +16,7 @@ const int SERVO_MAX = 2500;
 const int SERVO_INC = 3;
 
 double toRad(double x);
+double toDeg(double x);
 
 class Gimbal{
 public:
