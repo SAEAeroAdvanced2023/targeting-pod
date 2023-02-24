@@ -1,0 +1,11 @@
+[0.001193] INIT: Logger started :)
+[0.001895] EVENT: Parameters parsed for blob detector
+[0.002071] EVENT: Parameters parsed for math config
+[0.002187] EVENT: Parameters parsed for color detection
+[0.002274] EVENT: Parameters parsed for system config
+[0.246138] EVENT: Camera Initialized Successfully
+[9.508415] EVENT: Serial port /dev/ttyACM1 opened
+[9.508776] EVENT: Starting Flight controller loop
+[9.513362] EVENT: IMU serial port /dev/ttyACM0 opened
+[9.513749] EVENT: IMU sensor data loop started
+[9.565601] WARNING: Header checksum from gimbal IMU invalid

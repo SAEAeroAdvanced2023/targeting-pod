@@ -18,10 +18,14 @@ std::string currentDateTime() {
     char       buf[80];
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
-    //std::string x(buf);
-    //std::replace(x.begin(), x.end(), ':', '-');
-    //std::cout << x << std::endl;
-    return buf;
+    std::string x(buf);
+    for (int i = 0; i < x.length(); i++) {
+		if (x[i] == ':') {
+			x[i] = '-';
+		}
+	}
+    std::cout << x << std::endl;
+    return x;
 }
 
 // Forward declaration

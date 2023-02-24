@@ -68,6 +68,8 @@ void crosshair(int x, int y, Mat frame, int r) {
 
 int main(int argc, char** argv){
 
+    Logger::initLogger();
+
     // Load parameters and create detector (Shout out json_struct.h)
     Ptr<SimpleBlobDetector> detector = makeBlobParams(readFile(BLOB_PARAM_FILE));
     MathParams mathParams = makeMathParams(readFile(MATH_PARAM_FILE));
@@ -147,22 +149,20 @@ int main(int argc, char** argv){
         //Logger::logDebug();
 
         //cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl; 
-        cout << "Pitch v: " << toDeg(cubeData.pitch - flightController.getInitData().pitch) 
+        /*cout << "Pitch v: " << toDeg(cubeData.pitch - flightController.getInitData().pitch) 
             << " Roll v: " << toDeg(cubeData.roll - flightController.getInitData().roll) 
             << " Yaw v: " << toDeg(cubeData.yaw - flightController.getInitData().yaw) << endl;
         cout << "Pitch g: " << imuData.pitch - toDeg(cubeData.pitch - flightController.getInitData().pitch) 
             << " Roll g: " << imuData.roll - toDeg(cubeData.roll - flightController.getInitData().roll)  
-            << " Yaw g: " << imuData.yaw - toDeg(cubeData.yaw - flightController.getInitData().yaw)  << endl; 
+            << " Yaw g: " << imuData.yaw - toDeg(cubeData.yaw - flightController.getInitData().yaw)  << endl; */
 
         // Masking the frames using Json config file
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
-        std::cout << "sdfasdfa" << std::endl;
         if (colorParams.minHue>colorParams.maxHue){
             inRange(hsv, Scalar(0, colorParams.minSaturation, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxSaturation, colorParams.maxValue), mask1);
             inRange(hsv, Scalar(colorParams.minHue, colorParams.minSaturation, colorParams.minValue), Scalar(179, colorParams.maxSaturation, colorParams.maxValue), mask2);
             mask = mask1 | mask2; // Bitwise OR instead of addition!!!
         } else{
-            std::cout << "Dsfasdfa" << std::endl;
             inRange(hsv, Scalar(colorParams.minHue, colorParams.minSaturation, colorParams.minValue), Scalar(colorParams.maxHue, colorParams.maxSaturation, colorParams.maxValue), mask);
         }
         
