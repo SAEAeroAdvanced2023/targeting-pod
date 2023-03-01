@@ -19,7 +19,7 @@
 
 class Logger {
 public:
-    static void initLogger();
+    static void initLogger(std::string x);
     static void logEvent(std::string x);
     static void logWarning(std::string x);
     static void logCritical(std::string x);

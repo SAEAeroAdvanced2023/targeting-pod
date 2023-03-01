@@ -52,15 +52,15 @@ void FlightController::readData(){
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
                     //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
                     if (!initb) {
-                        this->initData.roll = 0;//this->attitude.roll;
-                        this->initData.yaw = 0;//this->attitude.yaw;
-                        this->initData.pitch = 0;//this->attitude.pitch;
+                        this->initData.roll = this->attitude.roll;
+                        this->initData.yaw = this->attitude.yaw;
+                        this->initData.pitch = this->attitude.pitch;
                         initb = true;
                     }
                     if (flightControllerMutex.try_lock()) {
-                        this->data.roll = 0;//this->attitude.roll;
-                        this->data.yaw = 0;//this->attitude.yaw;
-                        this->data.pitch = 0;//this->attitude.pitch;
+                        this->data.roll = this->attitude.roll;
+                        this->data.yaw = this->attitude.yaw;
+                        this->data.pitch = this->attitude.pitch;
                         flightControllerMutex.unlock();
                     }
                 }

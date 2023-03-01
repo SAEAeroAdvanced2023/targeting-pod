@@ -1,5 +1,5 @@
 {
   "imuPort": "/dev/ttyACM0",
-  "fcPort": "/dev/ttyACM1",
+  "fcPort": "/dev/serial0",
   "cPort": 0
 }

@@ -68,7 +68,13 @@ void crosshair(int x, int y, Mat frame, int r) {
 
 int main(int argc, char** argv){
 
-    Logger::initLogger();
+    // If theres a cmd line param, append the first one to file name
+    if (argc == 1) {
+        Logger::initLogger("");
+    } else {
+        std::string sss(argv[1]);
+        Logger::initLogger(sss);
+    }
 
     // Load parameters and create detector (Shout out json_struct.h)
     Ptr<SimpleBlobDetector> detector = makeBlobParams(readFile(BLOB_PARAM_FILE));

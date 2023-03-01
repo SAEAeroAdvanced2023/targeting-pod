@@ -35,10 +35,15 @@ Logger Logger::logger;
 Logger::Logger(){}
 
 // Initializes the logger
-void Logger::initLogger(){
+void Logger::initLogger(std::string x){
     std::string s = currentDateTime();
-    logger.logFile.open("./logs/" + s + ".log");
-    logger.csvFile.open("./logs/" + s + ".csv");
+    if (x == ""){
+        logger.logFile.open("./logs/" + s + ".log");
+        logger.csvFile.open("./logs/" + s + ".csv");
+    } else {
+        logger.logFile.open("./logs/" + s + "_" + x + ".log");
+        logger.csvFile.open("./logs/" + s + "_" + x + ".csv");
+    }
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (now - logger.begin).count() / 1000000000;
     logger.logFile << "[" + std::to_string(time) + "] INIT: Logger started :)" << std::endl;
