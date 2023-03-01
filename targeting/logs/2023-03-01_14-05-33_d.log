@@ -1,0 +1,11 @@
+[0.000422] INIT: Logger started :)
+[0.000829] EVENT: Parameters parsed for blob detector
+[0.001027] EVENT: Parameters parsed for math config
+[0.001164] EVENT: Parameters parsed for color detection
+[0.001257] EVENT: Parameters parsed for system config
+[0.234127] EVENT: Camera Initialized Successfully
+[53.252329] EVENT: Serial port /dev/serial0 opened
+[53.252664] EVENT: Starting Flight controller loop
+[53.255083] EVENT: IMU serial port /dev/ttyACM0 opened
+[53.255412] EVENT: IMU sensor data loop started
+[53.498772] EVENT: Tracking loop started
