@@ -24,9 +24,8 @@ using namespace std;
 
 extern std::mutex flightControllerMutex;
 
-//TODO: Define the data
 struct CubeData{
-    string mode;
+    string mode = "READY";
     double latitude = 0;
     double longitude = 0;
     double altitude = 0;

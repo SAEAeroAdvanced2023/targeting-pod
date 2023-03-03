@@ -1,0 +1,6 @@
+[0.000642] INIT: Logger started :)
+[0.000989] EVENT: Parameters parsed for blob detector
+[0.001161] EVENT: Parameters parsed for math config
+[0.001272] EVENT: Parameters parsed for color detection
+[0.001355] EVENT: Parameters parsed for system config
+[0.209964] CRITICAL: Camera Initialization failed!!!

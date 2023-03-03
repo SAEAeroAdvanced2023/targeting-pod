@@ -30,14 +30,14 @@ def main():
             mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
             0,
             30, # Getting Attitude Raw Data
-            50000, # The interval between two messages (in microseconds)
+            30000, # The interval between two messages (in microseconds)
             0,0,0,0,0) #Keep zero
     vehicle.mav.command_long_send(
             vehicle.target_system, vehicle.target_component,
             mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
             0,
             24, # Getting GPS Raw Data
-            50000, # The interval between two messages (in microseconds)
+            30000, # The interval between two messages (in microseconds)
             0,0,0,0,0) #Keep zero
     print("Cube configured via Python")
     

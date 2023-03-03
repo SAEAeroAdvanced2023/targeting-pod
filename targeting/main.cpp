@@ -48,27 +48,10 @@ void crosshair(int x, int y, Mat frame, int r) {
     line(frame, Point(x, y + r), Point(x ,y + r/2), Scalar(0,0,255), 1);
 }
 
-/*int main(int argc, char *argv[]){
-    Camera camera;
-    Frame frame;
-    int i = 0;
-    while (true){
-        frame = camera.getFrame();
-        if(!frame.image.empty()){
-            i++;
-            cout << "W #" << i << endl;
-            imshow("Preprocessed", frame.image);
-        } else {
-            i++;
-            cout << "L #" << i << endl;
-        }
-        cv::waitKey(30);
-    }
-}*/
-
 int main(int argc, char** argv){
 
     // If theres a cmd line param, append the first one to file name
+    // Definitely init the logger first so we can log everything
     if (argc == 1) {
         Logger::initLogger("");
     } else {
@@ -99,37 +82,12 @@ int main(int argc, char** argv){
 
     // Misc variables
     cv::namedWindow("Display", CV_WINDOW_AUTOSIZE);
-    string mode = "auto";
     Mat mask, mask1, mask2, hsv;
     vector<KeyPoint> keypoints;
+    std::string mode;
     Frame frame;
     IMUData imuData;
     CubeData cubeData;
-    
-    // Tracking variables
-//    // TODO: Load from file, camera calibration tool should write matrix to file
-//    Eigen::MatrixXd ccm_inv(4,4);
-//    ccm_inv << 0.00204358, 0, -0.66121428, 0, 0, 0.00204224, -0.47667228, 0, 0, 0, 1, 0, 0, 0, 0, 1;
-//    Eigen::MatrixXd ccm(3,3);
-//    ccm << 489.33767087, 0, 323.55705702, 0, 489.65953971, 233.40712684, 0, 0, 1;
-//    //TODO: Get actual values for these
-//    Eigen::MatrixXd v_dist(1,3);
-//    v_dist << 0, 0, -100;
-//    Eigen::MatrixXd g_dist(1,3);
-//    g_dist << 0, 0, 0;
-//    Eigen::MatrixXd c_dist(1,3);
-//    c_dist << 0, 0, 0;
-//    double f = 0.304;
-//    Eigen::MatrixXd gnd(2,3);
-//    gnd << 1, 1, 0, 0, 0, 1;
-    /* Dummy values
-    Eigen::MatrixXd v_dist(1,3);
-    v_dist << 0, 0, -0.805;
-    Eigen::MatrixXd g_dist(1,3);
-    g_dist << 0, 0, 0;
-    Eigen::MatrixXd c_dist(1,3);
-    c_dist << 0, 0, 0;
-    */
     
     Logger::logEvent("Tracking loop started");
 
@@ -152,15 +110,6 @@ int main(int argc, char** argv){
         imuMutex.lock();
         imuData = imu.getSensorData();
         imuMutex.unlock();
-        //Logger::logDebug();
-
-        //cout << "Pitch: " << imuData.pitch << " Roll: " << imuData.roll << " Yaw: " << imuData.yaw << endl; 
-        /*cout << "Pitch v: " << toDeg(cubeData.pitch - flightController.getInitData().pitch) 
-            << " Roll v: " << toDeg(cubeData.roll - flightController.getInitData().roll) 
-            << " Yaw v: " << toDeg(cubeData.yaw - flightController.getInitData().yaw) << endl;
-        cout << "Pitch g: " << imuData.pitch - toDeg(cubeData.pitch - flightController.getInitData().pitch) 
-            << " Roll g: " << imuData.roll - toDeg(cubeData.roll - flightController.getInitData().roll)  
-            << " Yaw g: " << imuData.yaw - toDeg(cubeData.yaw - flightController.getInitData().yaw)  << endl; */
 
         // Masking the frames using Json config file
         cvtColor(frame.image, hsv ,COLOR_BGR2HSV);
@@ -175,33 +124,32 @@ int main(int argc, char** argv){
         // Detecting the blob and drawing on the frame
         detector->detect(mask, keypoints);
         drawKeypoints(mask,keypoints,mask);
+        
+        // Check flight controller data to see if mode changed
+        mode = flightController.getData().mode;
 
         for (int i = 0; i < keypoints.size(); i++){
             crosshair(keypoints[i].pt.x, keypoints[i].pt.y, frame.image, 20);
             line(frame.image, Point(keypoints[i].pt.x, keypoints[i].pt.y), Point(mask.cols/2,mask.rows/2), Scalar(255,0,0), 1);
         }
 
-        crosshair(mask.cols/2, mask.rows/2, frame.image, 40);
-        //circle(frame, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
+        //crosshair(mask.cols/2, mask.rows/2, frame.image, 40); //Just goofy asf
+        circle(frame.image, Point(mask.cols/2,mask.rows/2), 1, Scalar(0,0,255), 1);
+        cv::putText(frame.image, mode, cv::Point(0,460), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0), 3, false);
 
         // Display frames on screen
         imshow("Display", frame.image);
-        imshow("Masked", mask);
-
-        // Check flight controller data to see if mode changed (Unnecessary?)
-        //mode = flightController.getData().mode;
+        imshow("Masked", mask); // Nice to have for debugging but disable while FPV streaming
 
         // Calculate the point and store it
-        if ((mode == "auto" || mode == "manual") && keypoints.size() == 1){
-            //pointList.addPoint(transform_dummy(frame.timestamp));
-
+        if ((mode == "AUTO" || mode == "MANUAL") && keypoints.size() == 1){
             GPSPoint m = transform(mathParams.vDist, cubeData.roll - flightController.getInitData().roll, cubeData.yaw - flightController.getInitData().yaw, cubeData.pitch - flightController.getInitData().pitch, toRad(imuData.roll) - cubeData.roll + flightController.getInitData().roll, toRad(imuData.yaw) - cubeData.yaw + flightController.getInitData().yaw, toRad(imuData.pitch) - cubeData.pitch + flightController.getInitData().pitch, mathParams.ccm, mathParams.ccmInv, keypoints[0].pt.x, keypoints[0].pt.y, mathParams.gDist, mathParams.cDist, mathParams.f, mathParams.gnd, frame.timestamp);
             pointList.addPoint(m);
             Logger::logCSV(m, cubeData, flightController, imuData, keypoints[0].pt.x, keypoints[0].pt.y);
         }
 
         // Move the gimbal
-        if (mode == "ready" || mode == "auto"){
+        if (mode == "AUTO"){
             //gimbal.trackPoint(keypoints, mask); // Pitch Roll config
             //gimbal.trackPointPolar(keypoints, mask); // Pitch Yaw config
         }
@@ -210,6 +158,7 @@ int main(int argc, char** argv){
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         double time = (double) std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() / 1000000000;
         cout << i << ": " << fixed << setprecision(10) << time << endl;
+        //cout << i << ": " << imuData.pitch << endl;
         Logger::logDebug("Frame " + std::to_string(i) + " process time: " + std::to_string(time) + "s");
 
         //if ((char)cv::waitKey(10) > 0) break;
@@ -217,7 +166,7 @@ int main(int argc, char** argv){
 
     }
 
-        // Just for testing rn
+    // Just for testing rn
     Eigen::MatrixXd m = pointList.calculateAverage();
     cout << m << endl;
     Logger::logEvent("Calculated point: " + vec2string(m));

@@ -1,0 +1,126 @@
+[0.004327] INIT: Logger started :)
+[0.004768] EVENT: Parameters parsed for blob detector
+[0.004983] EVENT: Parameters parsed for math config
+[0.005133] EVENT: Parameters parsed for color detection
+[0.005242] EVENT: Parameters parsed for system config
+[0.285520] EVENT: Camera Initialized Successfully
+[1.171553] EVENT: Serial port /dev/serial0 opened
+[1.171889] EVENT: Starting Flight controller loop
+[1.173462] EVENT: IMU serial port /dev/ttyACM0 opened
+[1.173860] EVENT: IMU sensor data loop started
+[1.372246] EVENT: Tracking loop started
+[1.886817] DEBUG: Frame 0 process time: 0.514328s
+[2.017041] DEBUG: Frame 1 process time: 0.096982s
+[2.128084] DEBUG: Frame 2 process time: 0.077871s
+[2.248082] DEBUG: Frame 3 process time: 0.089591s
+[2.369446] DEBUG: Frame 4 process time: 0.079098s
+[2.483790] DEBUG: Frame 5 process time: 0.083101s
+[2.591800] DEBUG: Frame 6 process time: 0.077197s
+[2.701328] DEBUG: Frame 7 process time: 0.078557s
+[2.757373] EVENT: Received [TestTest:696969.000000]
+[2.809291] DEBUG: Frame 8 process time: 0.077191s
+[2.817542] EVENT: Received [SuperCool:420420.000000]
+[2.916666] DEBUG: Frame 9 process time: 0.076697s
+[3.026227] DEBUG: Frame 10 process time: 0.078420s
+[3.139673] DEBUG: Frame 11 process time: 0.082450s
+[3.249926] DEBUG: Frame 12 process time: 0.078946s
+[3.357527] DEBUG: Frame 13 process time: 0.076746s
+[3.464452] DEBUG: Frame 14 process time: 0.075692s
+[3.573550] DEBUG: Frame 15 process time: 0.078174s
+[3.685281] DEBUG: Frame 16 process time: 0.081056s
+[3.793265] DEBUG: Frame 17 process time: 0.077273s
+[3.901476] DEBUG: Frame 18 process time: 0.077020s
+[4.012866] DEBUG: Frame 19 process time: 0.080148s
+[4.123861] DEBUG: Frame 20 process time: 0.080180s
+[4.231512] DEBUG: Frame 21 process time: 0.076737s
+[4.338145] DEBUG: Frame 22 process time: 0.076054s
+[4.444749] DEBUG: Frame 23 process time: 0.075315s
+[4.551697] DEBUG: Frame 24 process time: 0.076366s
+[4.658827] DEBUG: Frame 25 process time: 0.075762s
+[4.765505] DEBUG: Frame 26 process time: 0.075992s
+[4.817409] EVENT: Received [TestTest:696969.000000]
+[4.817730] EVENT: Received [SuperCool:420420.000000]
+[4.872434] DEBUG: Frame 27 process time: 0.075582s
+[4.981418] DEBUG: Frame 28 process time: 0.078288s
+[5.112397] DEBUG: Frame 29 process time: 0.100359s
+[5.261139] DEBUG: Frame 30 process time: 0.113789s
+[5.368213] DEBUG: Frame 31 process time: 0.076446s
+[5.475912] DEBUG: Frame 32 process time: 0.077036s
+[5.583332] DEBUG: Frame 33 process time: 0.076135s
+[5.694817] DEBUG: Frame 34 process time: 0.080897s
+[5.802724] DEBUG: Frame 35 process time: 0.077217s
+[5.910080] DEBUG: Frame 36 process time: 0.076536s
+[6.017808] DEBUG: Frame 37 process time: 0.076423s
+[6.128001] DEBUG: Frame 38 process time: 0.079361s
+[6.236962] DEBUG: Frame 39 process time: 0.078238s
+[6.346293] DEBUG: Frame 40 process time: 0.077940s
+[6.453844] DEBUG: Frame 41 process time: 0.076294s
+[6.561393] DEBUG: Frame 42 process time: 0.076967s
+[6.675267] DEBUG: Frame 43 process time: 0.082652s
+[6.783766] DEBUG: Frame 44 process time: 0.077379s
+[6.797667] EVENT: Received [TestTest:696969.000000]
+[6.797946] EVENT: Received [SuperCool:420420.000000]
+[6.890880] DEBUG: Frame 45 process time: 0.076684s
+[7.000414] DEBUG: Frame 46 process time: 0.079201s
+[7.109510] DEBUG: Frame 47 process time: 0.078317s
+[7.221144] DEBUG: Frame 48 process time: 0.080408s
+[7.330601] DEBUG: Frame 49 process time: 0.078921s
+[7.440744] DEBUG: Frame 50 process time: 0.078967s
+[7.549339] DEBUG: Frame 51 process time: 0.077588s
+[7.664851] DEBUG: Frame 52 process time: 0.084252s
+[7.777516] DEBUG: Frame 53 process time: 0.081340s
+[7.887520] DEBUG: Frame 54 process time: 0.078652s
+[7.999539] DEBUG: Frame 55 process time: 0.080676s
+[8.113388] DEBUG: Frame 56 process time: 0.082433s
+[8.223496] DEBUG: Frame 57 process time: 0.079643s
+[8.332712] DEBUG: Frame 58 process time: 0.078605s
+[8.441738] DEBUG: Frame 59 process time: 0.077966s
+[8.550528] DEBUG: Frame 60 process time: 0.077493s
+[8.666420] DEBUG: Frame 61 process time: 0.084762s
+[8.757587] EVENT: Received [TestTest:696969.000000]
+[8.776245] DEBUG: Frame 62 process time: 0.077887s
+[8.817473] EVENT: Received [SuperCool:420420.000000]
+[8.886365] DEBUG: Frame 63 process time: 0.079000s
+[8.995073] DEBUG: Frame 64 process time: 0.078106s
+[9.105293] DEBUG: Frame 65 process time: 0.079090s
+[9.214990] DEBUG: Frame 66 process time: 0.079212s
+[9.324381] DEBUG: Frame 67 process time: 0.078444s
+[9.432963] DEBUG: Frame 68 process time: 0.077844s
+[9.542001] DEBUG: Frame 69 process time: 0.077894s
+[9.657171] DEBUG: Frame 70 process time: 0.084089s
+[9.767182] DEBUG: Frame 71 process time: 0.078708s
+[9.876548] DEBUG: Frame 72 process time: 0.078918s
+[9.986316] DEBUG: Frame 73 process time: 0.078814s
+[10.115873] DEBUG: Frame 74 process time: 0.097750s
+[10.230763] DEBUG: Frame 75 process time: 0.080677s
+[10.340487] DEBUG: Frame 76 process time: 0.078555s
+[10.449146] DEBUG: Frame 77 process time: 0.077655s
+[10.558922] DEBUG: Frame 78 process time: 0.078524s
+[10.674911] DEBUG: Frame 79 process time: 0.084770s
+[10.783763] DEBUG: Frame 80 process time: 0.077666s
+[10.817552] EVENT: Received [SuperCool:420420.000000]
+[10.892684] DEBUG: Frame 81 process time: 0.077642s
+[11.004258] DEBUG: Frame 82 process time: 0.081177s
+[11.114421] DEBUG: Frame 83 process time: 0.079289s
+[11.228219] DEBUG: Frame 84 process time: 0.082691s
+[11.336871] DEBUG: Frame 85 process time: 0.077475s
+[11.445012] DEBUG: Frame 86 process time: 0.077025s
+[11.552970] DEBUG: Frame 87 process time: 0.077107s
+[11.664826] DEBUG: Frame 88 process time: 0.080659s
+[11.772609] DEBUG: Frame 89 process time: 0.076758s
+[11.881522] DEBUG: Frame 90 process time: 0.078047s
+[11.989981] DEBUG: Frame 91 process time: 0.077562s
+[12.103832] DEBUG: Frame 92 process time: 0.082567s
+[12.214128] DEBUG: Frame 93 process time: 0.079650s
+[12.323378] DEBUG: Frame 94 process time: 0.077926s
+[12.432185] DEBUG: Frame 95 process time: 0.077675s
+[12.539605] DEBUG: Frame 96 process time: 0.076599s
+[12.650642] DEBUG: Frame 97 process time: 0.080498s
+[12.758726] DEBUG: Frame 98 process time: 0.077258s
+[12.857612] EVENT: Received [TestTest:696969.000000]
+[12.857878] EVENT: Received [SuperCool:420420.000000]
+[12.868917] DEBUG: Frame 99 process time: 0.079285s
+[12.899707] EVENT: Calculated point: nan nan nan
+[12.899808] EVENT: Sent [LAT:nan] to Ground Station
+[12.900022] EVENT: Sent [LON:nan] to Ground Station
+[12.900115] CLOSE: Closing Logger :)

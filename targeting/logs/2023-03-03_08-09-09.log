@@ -1,0 +1,37 @@
+[0.001414] INIT: Logger started :)
+[0.002181] EVENT: Parameters parsed for blob detector
+[0.002429] EVENT: Parameters parsed for math config
+[0.002567] EVENT: Parameters parsed for color detection
+[0.002656] EVENT: Parameters parsed for system config
+[0.236158] EVENT: Camera Initialized Successfully
+[1.300387] EVENT: Serial port /dev/serial0 opened
+[1.300815] EVENT: Starting Flight controller loop
+[1.302603] EVENT: IMU serial port /dev/ttyACM0 opened
+[1.302950] EVENT: IMU sensor data loop started
+[1.504553] EVENT: Tracking loop started
+[2.020159] DEBUG: Frame 0 process time: 0.515253s
+[2.161750] DEBUG: Frame 1 process time: 0.085038s
+[2.281576] DEBUG: Frame 2 process time: 0.089247s
+[2.360723] DEBUG: Frame 3 process time: 0.077850s
+[2.479829] DEBUG: Frame 4 process time: 0.075008s
+[2.592104] DEBUG: Frame 5 process time: 0.081108s
+[2.699564] DEBUG: Frame 6 process time: 0.076047s
+[2.807067] DEBUG: Frame 7 process time: 0.076189s
+[2.919483] DEBUG: Frame 8 process time: 0.075580s
+[3.026177] DEBUG: Frame 9 process time: 0.075487s
+[3.102511] DEBUG: Frame 10 process time: 0.075774s
+[3.179185] DEBUG: Frame 11 process time: 0.075882s
+[3.285749] DEBUG: Frame 12 process time: 0.075840s
+[3.391348] DEBUG: Frame 13 process time: 0.075104s
+[3.497639] DEBUG: Frame 14 process time: 0.075678s
+[3.602965] DEBUG: Frame 15 process time: 0.074885s
+[3.709213] DEBUG: Frame 16 process time: 0.075340s
+[3.814649] DEBUG: Frame 17 process time: 0.074374s
+[3.921456] DEBUG: Frame 18 process time: 0.075769s
+[4.027228] DEBUG: Frame 19 process time: 0.075094s
+[4.132768] DEBUG: Frame 20 process time: 0.074823s
+[4.238517] DEBUG: Frame 21 process time: 0.074440s
+[4.349136] DEBUG: Frame 22 process time: 0.079611s
+[4.466537] DEBUG: Frame 23 process time: 0.085998s
+[4.573523] DEBUG: Frame 24 process time: 0.076054s
+[4.680745] DEBUG: Frame 25 process time: 0.076754s

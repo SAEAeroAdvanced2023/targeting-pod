@@ -9,7 +9,6 @@ std::mutex flightControllerMutex;
 std::mutex serialMutex;
 
 // TODO: Add "this" keyword in front of member variables to make code easier to understand :)
-// TODO: MUTEXES FOR SENDING AND RECEIVING
 
 // Updates the sensor data
 void FlightController::readData(){
@@ -28,8 +27,6 @@ void FlightController::readData(){
             std::cout << e.what() << std::endl;
             Logger::logWarning("Flight controller couldn't read from port properly?!");
         }
-        //std::cout << "port read!!!" << std::endl;
-        //std::cout << "byte contents:" << (int) this->byte << std::endl;
         if (mavlink_parse_char(MAVLINK_COMM_0, this->byte, &this->msg, &this->status)) {
             //std::cout << " ok, Received message with ID " << this->msg.msgid << ", sequence: " << (int) this->msg.seq << " from component " << (int) this->msg.compid << " of system " << (int) this->msg.sysid << std::endl;
             switch(this->msg.msgid) {
@@ -51,10 +48,8 @@ void FlightController::readData(){
                     }
                 }
                     break;
-                case MAVLINK_MSG_ID_ATTITUDE:{ // ID for raw attitude data
-                    // Get all fields in payload (into attitude)
+                case MAVLINK_MSG_ID_ATTITUDE:{ 
                     mavlink_msg_attitude_decode(&this->msg, &this->attitude);
-                    //std::cout <<"roll: " << this->attitude.roll << ", pitch: " << this->attitude.pitch << ", yaw: " << this->attitude.yaw << std::endl;
                     if (!initb) {
                         this->initData.roll = this->attitude.roll;
                         this->initData.yaw = this->attitude.yaw;
@@ -66,6 +61,52 @@ void FlightController::readData(){
                         this->data.yaw = this->attitude.yaw;
                         this->data.pitch = this->attitude.pitch;
                         flightControllerMutex.unlock();
+                    }
+                }
+                    break;
+                case MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:{
+                    mavlink_msg_named_value_float_decode(&this->msg, &this->namedFloat);
+                    std::string name = namedFloat.name;
+                    if (name == "MODE") { // 0 = READY, 1 = MANUAL, 2 = AUTO
+                        if (namedFloat.value == (float) 0) {
+                            this->data.mode = "READY";
+                            Logger::logEvent("Mode switched to READY");
+                        } else if (namedFloat.value == (float) 1) {
+                            this->data.mode = "MANUAL";
+                            Logger::logEvent("Mode switched to MANUAL");
+                        } else if (namedFloat.value == (float) 2) {
+                            this->data.mode = "AUTO";
+                            Logger::logEvent("Mode switched to AUTO");
+                        } else {
+                            this->data.mode = "READY";
+                            Logger::logWarning("Received invalid mode value: " + std::to_string(namedFloat.value) + ", switching to READY mode");
+                        }
+                    } else if (name == "GIM1") {
+                        if (this->data.mode != "AUTO") {
+                            if (namedFloat.value == (float) 0) {
+                                //RESET GIMBAL TO 0
+                            } else if (namedFloat.value > (float) 0) {
+                                //INCREMENT GIMBAL
+                            } else if (namedFloat.value < (float) 0) {
+                                //DEINCREMENT GIMBAL
+                            } else {
+                                Logger::logCritical("Something absolutely goofy is happening with the gimbal messaging");
+                            }
+                        }
+                    } else if (name == "GIM2") {
+                        if (this->data.mode != "AUTO") {
+                            if (namedFloat.value == (float) 0) {
+                                //RESET GIMBAL TO 0
+                            } else if (namedFloat.value > (float) 0) {
+                                //INCREMENT GIMBAL
+                            } else if (namedFloat.value < (float) 0) {
+                                //DEINCREMENT GIMBAL
+                            } else {
+                                Logger::logCritical("Something absolutely goofy is happening with the gimbal messaging");
+                            }
+                        }
+                    } else {
+                        Logger::logWarning("Received unknown message [" + name + ":" + std::to_string(namedFloat.value) + "]");
                     }
                 }
                     break;

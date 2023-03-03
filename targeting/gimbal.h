@@ -7,7 +7,6 @@
 
 using namespace std;
 
-// TODO: Decide whether or not to load from config file instead (Hard coding should be fine I think)
 const int SERVO1 = 23;
 const int SERVO2 = 24;
 const int SERVO_MIN = 500;

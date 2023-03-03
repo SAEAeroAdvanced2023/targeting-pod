@@ -9,8 +9,6 @@
 #include "imu.h"
 #include "gimbal.h"
 
-// TODO: Add some mutexes and pretty sure this becomes a thread safe singleton logger >:)
-
 // Cute function to get datetime
 std::string currentDateTime() {
     time_t     now = time(0);
