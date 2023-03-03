@@ -221,6 +221,10 @@ int main(int argc, char** argv){
     Eigen::MatrixXd m = pointList.calculateAverage();
     cout << m << endl;
     Logger::logEvent("Calculated point: " + vec2string(m));
+    const char c[10] = {'L','A','T'};
+    const char d[10] = {'L','O','N'};
+    flightController.sendData(c, m(0,0));
+    flightController.sendData(d, m(0,1));
     //gpioTerminate();
 
     Logger::closeLogger();

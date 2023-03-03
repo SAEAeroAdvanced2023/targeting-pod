@@ -6,8 +6,10 @@
 using namespace std;
 
 std::mutex flightControllerMutex;
+std::mutex serialMutex;
 
 // TODO: Add "this" keyword in front of member variables to make code easier to understand :)
+// TODO: MUTEXES FOR SENDING AND RECEIVING
 
 // Updates the sensor data
 void FlightController::readData(){
@@ -19,7 +21,9 @@ void FlightController::readData(){
     
     while(this->serial_port > 0) {
         try {
-            read(this->serial_port, &this->byte, sizeof(this->byte));       
+            serialMutex.lock();
+            read(this->serial_port, &this->byte, sizeof(this->byte));
+            serialMutex.unlock();       
         } catch(const std::exception& e){
             std::cout << e.what() << std::endl;
             Logger::logWarning("Flight controller couldn't read from port properly?!");
@@ -94,9 +98,23 @@ FlightController::FlightController(std::string port){
 
 }
 
-// TODO: Send a command to the controller (Do we ever do this from this program? Or is it only from the GS?)
-void FlightController::sendData(){
+// Sends a message to the controller
+void FlightController::sendData(const char* name, float f){
     
+    	for (int k = 0; k < FC_BUFFER_SIZE; k++) {
+			sendBuffer[k] = '\0';
+		}
+
+		mavlink_msg_named_value_float_pack(1,3,&sendMsg,++sendCount,name,f); // Abusing the timestamp field to get send count
+		unsigned len = mavlink_msg_to_send_buffer(sendBuffer, &sendMsg);
+
+        serialMutex.lock();
+		const int bytesWritten = static_cast<int>(write(serial_port, sendBuffer, len));
+        serialMutex.unlock();
+        
+        std::string s = name;
+
+		Logger::logEvent("Sent [" + s + ":" + std::to_string(f) + "] to Ground Station");
 }
 
 CubeData FlightController::getData(){

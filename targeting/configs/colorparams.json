@@ -1,6 +1,6 @@
 {
   "minHue": 170,
-  "minSaturation": 80,
+  "minSaturation": 150,
   "minValue": 175,
   "maxHue": 5,
   "maxSaturation": 255,
